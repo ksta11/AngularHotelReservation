@@ -1,7 +1,8 @@
-import { Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 import { HotelInfoComponent } from './admin/hotel-info/hotel-info.component';
 
-export const routes: Routes = [
+const routes: Routes = [
   {
     path: 'admin/hotel-info',
     component: HotelInfoComponent
@@ -12,7 +13,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'auth/login',
+    redirectTo: 'admin/hotel-info',
     pathMatch: 'full'
   },
   {
@@ -20,3 +21,9 @@ export const routes: Routes = [
     redirectTo: 'auth/login'
   }
 ];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { } 
