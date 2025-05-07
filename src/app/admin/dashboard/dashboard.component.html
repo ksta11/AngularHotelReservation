@@ -1,1 +1,129 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <div class="dashboard-wrapper">
+    <div class="dashboard-header">
+      <h1>Panel de Control</h1>
+      <p class="date">{{ today | date:'longDate' }}</p>
+    </div>
+
+    <!-- Estadísticas Principales -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon rooms-icon">
+          <fa-icon [icon]="faBed"></fa-icon>
+        </div>
+        <div class="stat-info">
+          <h3>Habitaciones</h3>
+          <div class="stat-numbers">
+            <div class="stat-item">
+              <span class="label">Total</span>
+              <span class="value">{{stats.totalRooms}}</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Ocupadas</span>
+              <span class="value">{{stats.occupiedRooms}}</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Disponibles</span>
+              <span class="value">{{stats.availableRooms}}</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Mantenimiento</span>
+              <span class="value">{{stats.maintenanceRooms}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon checkin-icon">
+          <fa-icon [icon]="faSignInAlt"></fa-icon>
+        </div>
+        <div class="stat-info">
+          <h3>Check-ins/Outs Hoy</h3>
+          <div class="stat-numbers">
+            <div class="stat-item">
+              <span class="label">Check-ins</span>
+              <span class="value">{{stats.todayCheckIns}}</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Check-outs</span>
+              <span class="value">{{stats.todayCheckOuts}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon revenue-icon">
+          <fa-icon [icon]="faDollarSign"></fa-icon>
+        </div>
+        <div class="stat-info">
+          <h3>Ingresos Mensuales</h3>
+          <div class="stat-numbers">
+            <div class="stat-item full-width">
+              <span class="value">${{stats.monthlyRevenue | number}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon occupancy-icon">
+          <fa-icon [icon]="faChartLine"></fa-icon>
+        </div>
+        <div class="stat-info">
+          <h3>Tasa de Ocupación</h3>
+          <div class="stat-numbers">
+            <div class="stat-item full-width">
+              <span class="value" [ngClass]="getOccupancyColor(stats.occupancyRate)">
+                {{stats.occupancyRate}}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reservas Recientes -->
+    <div class="recent-reservations">
+      <div class="section-header">
+        <h2>Reservas Recientes</h2>
+        <button class="btn btn-primary">Ver Todas</button>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Huésped</th>
+              <th>Habitación</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reservation of recentReservations">
+              <td>{{reservation.guestName}}</td>
+              <td>{{reservation.roomNumber}}</td>
+              <td>{{reservation.checkIn | date}}</td>
+              <td>{{reservation.checkOut | date}}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'badge-success': reservation.status === 'Confirmada',
+                  'badge-warning': reservation.status === 'Pendiente'
+                }">
+                  {{reservation.status}}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary">Ver Detalles</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

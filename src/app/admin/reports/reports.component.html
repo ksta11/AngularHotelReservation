@@ -1,1 +1,138 @@
-<p>reports works!</p>
+<div class="reports-container">
+  <div class="reports-header">
+    <h1>Reportes</h1>
+  </div>
+
+  <div class="reports-filters">
+    <div class="search-box">
+      <fa-icon [icon]="faSearch"></fa-icon>
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="applyFilters()"
+        placeholder="Buscar reportes..."
+      >
+    </div>
+
+    <div class="filter-group">
+      <select 
+        [(ngModel)]="selectedType" 
+        (ngModelChange)="applyFilters()"
+        class="form-select"
+      >
+        <option value="all">Todos los tipos</option>
+        <option value="occupancy">Ocupación</option>
+        <option value="revenue">Ingresos</option>
+        <option value="reviews">Reseñas</option>
+        <option value="bookings">Reservas</option>
+      </select>
+
+      <select 
+        [(ngModel)]="selectedPeriod" 
+        (ngModelChange)="applyFilters()"
+        class="form-select"
+      >
+        <option value="all">Todos los períodos</option>
+        <option value="Marzo 2024">Marzo 2024</option>
+        <option value="Febrero 2024">Febrero 2024</option>
+        <option value="Enero 2024">Enero 2024</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="reports-grid">
+    <div *ngIf="filteredReports.length === 0" class="no-reports">
+      <fa-icon [icon]="faChartBar"></fa-icon>
+      <p>No hay reportes que coincidan con los filtros</p>
+    </div>
+
+    <div *ngFor="let report of filteredReports" 
+         class="report-card"
+         [class]="getReportClass(report.type)">
+      <div class="report-header">
+        <div class="report-title">
+          <h3>{{ report.title }}</h3>
+          <span class="report-period">
+            <fa-icon [icon]="faCalendarAlt"></fa-icon>
+            {{ report.period }}
+          </span>
+        </div>
+        <button class="btn btn-icon" 
+                (click)="downloadReport(report)"
+                title="Descargar reporte">
+          <fa-icon [icon]="faDownload"></fa-icon>
+        </button>
+      </div>
+
+      <div class="report-content">
+        <ng-container [ngSwitch]="report.type">
+          <!-- Reporte de Ocupación -->
+          <div *ngSwitchCase="'occupancy'" class="report-data">
+            <div class="data-item">
+              <span class="label">Habitaciones Totales</span>
+              <span class="value">{{ formatNumber(report.data.totalRooms) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Habitaciones Ocupadas</span>
+              <span class="value">{{ formatNumber(report.data.occupiedRooms) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Tasa de Ocupación</span>
+              <span class="value">{{ report.data.occupancyRate }}%</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Estancia Promedio</span>
+              <span class="value">{{ report.data.averageStay }} días</span>
+            </div>
+          </div>
+
+          <!-- Reporte de Ingresos -->
+          <div *ngSwitchCase="'revenue'" class="report-data">
+            <div class="data-item">
+              <span class="label">Ingresos Totales</span>
+              <span class="value">{{ formatCurrency(report.data.totalRevenue) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Ingreso Promedio</span>
+              <span class="value">{{ formatCurrency(report.data.averageRevenue) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Ingresos Hab. Estándar</span>
+              <span class="value">{{ formatCurrency(report.data.revenueByRoom.standard) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Ingresos Hab. Deluxe</span>
+              <span class="value">{{ formatCurrency(report.data.revenueByRoom.deluxe) }}</span>
+            </div>
+          </div>
+
+          <!-- Reporte de Reseñas -->
+          <div *ngSwitchCase="'reviews'" class="report-data">
+            <div class="data-item">
+              <span class="label">Total Reseñas</span>
+              <span class="value">{{ formatNumber(report.data.totalReviews) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Calificación Promedio</span>
+              <span class="value">{{ report.data.averageRating }} / 5</span>
+            </div>
+            <div class="data-item">
+              <span class="label">5 Estrellas</span>
+              <span class="value">{{ formatNumber(report.data.ratingDistribution.five) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">4 Estrellas</span>
+              <span class="value">{{ formatNumber(report.data.ratingDistribution.four) }}</span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="report-footer">
+        <span class="report-date">
+          Generado: {{ report.createdAt | date:'short' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

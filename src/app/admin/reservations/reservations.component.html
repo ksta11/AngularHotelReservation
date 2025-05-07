@@ -1,1 +1,97 @@
-<p>reservations works!</p>
+<div class="reservations-container">
+  <div class="reservations-wrapper">
+    <div class="reservations-header">
+      <h1>Gestión de Reservas</h1>
+      <button class="btn btn-primary">
+        <fa-icon [icon]="faPlus"></fa-icon>
+        Nueva Reserva
+      </button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (input)="onSearch()"
+          placeholder="Buscar por nombre, habitación o email..."
+        >
+        <fa-icon [icon]="faSearch"></fa-icon>
+      </div>
+
+      <div class="filter-controls">
+        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+          <option value="todos">Todos los estados</option>
+          <option value="confirmada">Confirmadas</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="cancelada">Canceladas</option>
+        </select>
+
+        <select [(ngModel)]="dateFilter" (change)="onDateFilterChange()">
+          <option value="todos">Todas las fechas</option>
+          <option value="hoy">Hoy</option>
+          <option value="semana">Próxima semana</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Tabla de Reservas -->
+    <div class="reservations-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Huésped</th>
+            <th>Habitación</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Estado</th>
+            <th>Pago</th>
+            <th>Total</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let reservation of filteredReservations">
+            <td>
+              <div class="guest-info">
+                <strong>{{reservation.guestName}}</strong>
+                <span>{{reservation.email}}</span>
+                <span>{{reservation.phone}}</span>
+              </div>
+            </td>
+            <td>
+              <div class="room-info">
+                <strong>{{reservation.roomNumber}}</strong>
+                <span>{{reservation.roomType}}</span>
+              </div>
+            </td>
+            <td>{{reservation.checkIn | date}}</td>
+            <td>{{reservation.checkOut | date}}</td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(reservation.status)">
+                {{reservation.status}}
+              </span>
+            </td>
+            <td>
+              <span class="payment-badge" [ngClass]="getPaymentStatusClass(reservation.paymentStatus)">
+                {{reservation.paymentStatus}}
+              </span>
+            </td>
+            <td>${{reservation.totalAmount | number}}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-icon" title="Editar">
+                  <fa-icon [icon]="faEdit"></fa-icon>
+                </button>
+                <button class="btn btn-icon" title="Eliminar" (click)="onDeleteReservation(reservation.id)">
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

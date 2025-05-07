@@ -1,1 +1,98 @@
-<p>reviews works!</p>
+<div class="reviews-container">
+  <div class="reviews-wrapper">
+    <div class="reviews-header">
+      <h1>Reseñas de Clientes</h1>
+    </div>
+
+    <div class="filters-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (ngModelChange)="filterReviews()"
+          placeholder="Buscar reseñas...">
+        <fa-icon [icon]="faSearch"></fa-icon>
+      </div>
+
+      <div class="filter-controls">
+        <select [(ngModel)]="selectedFilter" (ngModelChange)="filterReviews()">
+          <option value="all">Todos los estados</option>
+          <option value="pending">Pendientes</option>
+          <option value="approved">Aprobadas</option>
+          <option value="rejected">Rechazadas</option>
+        </select>
+
+        <select [(ngModel)]="selectedRating" (ngModelChange)="filterReviews()">
+          <option value="0">Todas las calificaciones</option>
+          <option value="5">5 estrellas</option>
+          <option value="4">4 estrellas</option>
+          <option value="3">3 estrellas</option>
+          <option value="2">2 estrellas</option>
+          <option value="1">1 estrella</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="reviews-list">
+      <div *ngIf="filteredReviews.length === 0" class="no-reviews">
+        No hay reseñas para mostrar
+      </div>
+
+      <div *ngFor="let review of filteredReviews" 
+           class="review-item"
+           [class.status-pending]="review.status === 'pending'"
+           [class.status-approved]="review.status === 'approved'"
+           [class.status-rejected]="review.status === 'rejected'">
+        
+        <div class="review-content">
+          <div class="review-header">
+            <div class="review-info">
+              <h3>{{ review.guestName }}</h3>
+              <span class="room-number">Habitación {{ review.roomNumber }}</span>
+            </div>
+            <div class="review-meta">
+              <div class="rating">
+                <fa-icon *ngFor="let star of getStars(review.rating)" 
+                        [icon]="faStar" 
+                        class="star"></fa-icon>
+              </div>
+              <span class="review-date">
+                {{ review.date | date:'short' }}
+              </span>
+            </div>
+          </div>
+          
+          <p class="review-comment">{{ review.comment }}</p>
+          
+          <div *ngIf="review.response" class="review-response">
+            <strong>Respuesta:</strong>
+            <p>{{ review.response }}</p>
+          </div>
+          
+          <div class="review-actions">
+            <button *ngIf="review.status === 'pending'" 
+                    class="btn btn-success" 
+                    (click)="approveReview(review)">
+              <fa-icon [icon]="faStar"></fa-icon>
+              Aprobar
+            </button>
+            
+            <button *ngIf="review.status === 'pending'" 
+                    class="btn btn-danger" 
+                    (click)="rejectReview(review)">
+              <fa-icon [icon]="faTrash"></fa-icon>
+              Rechazar
+            </button>
+            
+            <button *ngIf="review.status !== 'pending'" 
+                    class="btn btn-icon" 
+                    (click)="deleteReview(review)"
+                    title="Eliminar reseña">
+              <fa-icon [icon]="faTrash"></fa-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

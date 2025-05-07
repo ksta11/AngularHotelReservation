@@ -1,1 +1,164 @@
-<p>room-management works!</p>
+<div class="room-management-container">
+  <div class="room-management-wrapper">
+    <div class="room-management-card">
+      <div class="room-management-header">
+        <h2>{{ isEditing ? 'Editar Habitación' : 'Nueva Habitación' }}</h2>
+      </div>
+
+      <div class="room-management-content">
+        <form [formGroup]="roomForm" (ngSubmit)="onSubmit()" class="room-form">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="number">Número de Habitación</label>
+              <input 
+                type="text" 
+                id="number" 
+                formControlName="number" 
+                placeholder="Ej: 101"
+                [ngClass]="{'is-invalid': roomForm.get('number')?.invalid && roomForm.get('number')?.touched}"
+              >
+              <div class="invalid-feedback" *ngIf="roomForm.get('number')?.invalid && roomForm.get('number')?.touched">
+                El número de habitación es requerido y debe tener 3 dígitos
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="type">Tipo de Habitación</label>
+              <select 
+                id="type" 
+                formControlName="type"
+                [ngClass]="{'is-invalid': roomForm.get('type')?.invalid && roomForm.get('type')?.touched}"
+              >
+                <option value="">Seleccione un tipo</option>
+                <option *ngFor="let type of roomTypes" [value]="type">
+                  {{type}}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="roomForm.get('type')?.invalid && roomForm.get('type')?.touched">
+                El tipo de habitación es requerido
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="capacity">Capacidad</label>
+              <input 
+                type="number" 
+                id="capacity" 
+                formControlName="capacity" 
+                min="1" 
+                max="10"
+                [ngClass]="{'is-invalid': roomForm.get('capacity')?.invalid && roomForm.get('capacity')?.touched}"
+              >
+              <div class="invalid-feedback" *ngIf="roomForm.get('capacity')?.invalid && roomForm.get('capacity')?.touched">
+                La capacidad debe estar entre 1 y 10 personas
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="price">Precio por Noche</label>
+              <input 
+                type="number" 
+                id="price" 
+                formControlName="price" 
+                min="0"
+                [ngClass]="{'is-invalid': roomForm.get('price')?.invalid && roomForm.get('price')?.touched}"
+              >
+              <div class="invalid-feedback" *ngIf="roomForm.get('price')?.invalid && roomForm.get('price')?.touched">
+                El precio es requerido y debe ser mayor a 0
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="description">Descripción</label>
+            <textarea 
+              id="description" 
+              formControlName="description" 
+              rows="3"
+              [ngClass]="{'is-invalid': roomForm.get('description')?.invalid && roomForm.get('description')?.touched}"
+            ></textarea>
+            <div class="invalid-feedback" *ngIf="roomForm.get('description')?.invalid && roomForm.get('description')?.touched">
+              La descripción es requerida
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="amenities">Amenidades (separadas por comas)</label>
+            <input 
+              type="text" 
+              id="amenities" 
+              formControlName="amenities" 
+              placeholder="Ej: WiFi, TV, Aire acondicionado"
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="status">Estado</label>
+            <select 
+              id="status" 
+              formControlName="status"
+              [ngClass]="{'is-invalid': roomForm.get('status')?.invalid && roomForm.get('status')?.touched}"
+            >
+              <option value="">Seleccione un estado</option>
+              <option *ngFor="let status of roomStatuses" [value]="status">
+                {{status}}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="roomForm.get('status')?.invalid && roomForm.get('status')?.touched">
+              El estado es requerido
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="roomForm.invalid">
+              {{ isEditing ? 'Actualizar' : 'Crear' }} Habitación
+            </button>
+          </div>
+        </form>
+
+        <div class="rooms-list">
+          <h3>Habitaciones Existentes</h3>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Número</th>
+                  <th>Tipo</th>
+                  <th>Capacidad</th>
+                  <th>Precio</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let room of rooms">
+                  <td>{{room.number}}</td>
+                  <td>{{room.type}}</td>
+                  <td>{{room.capacity}}</td>
+                  <td>${{room.price}}</td>
+                  <td>
+                    <span class="badge" [ngClass]="{
+                      'badge-success': room.status === 'AVAILABLE',
+                      'badge-danger': room.status === 'OCCUPIED',
+                      'badge-warning': room.status === 'MAINTENANCE',
+                      'badge-info': room.status === 'RESERVED'
+                    }">
+                      {{room.status}}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-primary" (click)="editRoom(room)">Editar</button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteRoom(room.id!)">Eliminar</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
