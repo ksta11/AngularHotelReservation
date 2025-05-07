@@ -47,7 +47,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'admin/dashboard',
+    redirectTo: 'auth/login',
     pathMatch: 'full'
   },
   {
