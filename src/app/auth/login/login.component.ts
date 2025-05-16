@@ -34,7 +34,6 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     // Removemos la redirección automática para desarrollo
   }
-
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.loading = true;
@@ -43,10 +42,14 @@ export class LoginComponent implements OnInit {
       const { email, password } = this.loginForm.value;
 
       this.authService.login(email, password).subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.loading = false;
+          
+          // Obtener el usuario actual del servicio de autenticación
+          const currentUser = this.authService.getCurrentUser();
+          
           // Redirigir según el rol del usuario
-          if (response.user.role === 'admin') {
+          if (currentUser?.role === 'admin' || currentUser?.role === 'hotel_admin') {
             this.router.navigate(['/admin/dashboard']);
           } else {
             this.router.navigate(['/dashboard']);

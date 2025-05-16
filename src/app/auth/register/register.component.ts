@@ -26,8 +26,10 @@ export class RegisterComponent {
     private router: Router
   ) {
     this.registerForm = this.fb.group({
-      name: ['', [Validators.required]],
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]]
     }, {
@@ -49,16 +51,33 @@ export class RegisterComponent {
       this.loading = true;
       this.errorMessage = '';
 
-      const { name, email, password } = this.registerForm.value;
+      const { firstName, lastName, email, password, phone } = this.registerForm.value;
 
-      this.authService.register({ name, email, password }).subscribe({
-        next: () => {
+      this.authService.register({ 
+        email, 
+        password, 
+        firstName,
+        lastName,
+        phone
+      }).subscribe({
+        next: (_response) => {
           this.loading = false;
-          this.router.navigate(['/auth/login']);
+          // Como ya autenticamos al usuario después del registro, redirigimos según su rol
+          const currentUser = this.authService.getCurrentUser();
+          
+          if (currentUser?.role === 'admin' || currentUser?.role === 'hotel_admin') {
+            this.router.navigate(['/admin/dashboard']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         },
         error: (error) => {
           this.loading = false;
-          this.errorMessage = 'Error al registrar usuario. Por favor, intenta nuevamente.';
+          if (typeof error === 'string' && error.includes('already exists')) {
+            this.errorMessage = 'Este correo electrónico ya está registrado.';
+          } else {
+            this.errorMessage = 'Error al registrar usuario. Por favor, intenta nuevamente.';
+          }
           console.error('Error de registro:', error);
         }
       });

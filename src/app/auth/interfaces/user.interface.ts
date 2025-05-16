@@ -1,12 +1,20 @@
 export interface User {
-    id?: number;
+    id?: string;
     email: string;
     password?: string;
-    name?: string;
-    role?: 'admin' | 'client';
+    passwordHash?: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    role?: 'admin' | 'client' | 'hotel_admin';
 }
 
 export interface LoginResponse {
-    token: string;
-    user: User;
-} 
+    accessToken: string;
+}
+
+export interface AuthError {
+    message: string;
+    error: string;
+    statusCode: number;
+}
