@@ -1,0 +1,100 @@
+.user-edit-container {
+  padding: 2rem;
+  background-color: #5f8cec;
+  min-height: 100vh;
+
+  .header {
+    margin-bottom: 2rem;
+    text-align: center;
+
+    h1 {
+      color: #2c3e50;
+      margin: 0;
+    }
+  }
+
+  .form-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.45);
+    max-width: 600px;
+    margin: 0 auto;
+
+    .form-group {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+        font-weight: 500;
+      }
+
+      input, select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+
+        &:focus {
+          outline: none;
+          border-color: #3498db;
+        }
+
+        &::placeholder {
+          color: #95a5a6;
+        }
+      }
+
+      select {
+        background-color: white;
+        cursor: pointer;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+
+      button {
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s;
+
+        &.btn-primary {
+          background-color: #3498db;
+          color: white;
+          border: none;
+
+          &:hover {
+            background-color: #2980b9;
+          }
+        }
+
+        &.btn-secondary {
+          background-color: #95a5a6;
+          color: white;
+          border: none;
+
+          &:hover {
+            background-color: #7f8c8d;
+          }
+        }
+
+        fa-icon {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+} 

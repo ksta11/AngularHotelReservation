@@ -7,6 +7,8 @@ import { ReservationsComponent } from './reservations/reservations.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { ReviewsComponent } from './reviews/reviews.component';
 import { ReportsComponent } from './reports/reports.component';
+import { UsersComponent } from './users/users.component';
+import { UserEditComponent } from './users/user-edit/user-edit.component';
 
 const routes: Routes = [
   {
@@ -36,6 +38,18 @@ const routes: Routes = [
   {
     path: 'reports',
     component: ReportsComponent
+  },
+  {
+    path: 'users',
+    component: UsersComponent
+  },
+  {
+    path: 'users/new',
+    component: UserEditComponent
+  },
+  {
+    path: 'users/edit/:id',
+    component: UserEditComponent
   },
   {
     path: '',

@@ -1,0 +1,69 @@
+<div class="user-edit-container">
+  <div class="header">
+    <h1>{{ isNewUser ? 'Nuevo Usuario' : 'Editar Usuario' }}</h1>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" class="form-container">
+    <div class="form-group">
+      <label for="name">Nombre</label>
+      <input 
+        type="text" 
+        id="name" 
+        name="name" 
+        [(ngModel)]="user.name" 
+        required
+        placeholder="Ingrese el nombre del usuario"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input 
+        type="email" 
+        id="email" 
+        name="email" 
+        [(ngModel)]="user.email" 
+        required
+        placeholder="Ingrese el email del usuario"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="role">Rol</label>
+      <select 
+        id="role" 
+        name="role" 
+        [(ngModel)]="user.role" 
+        required
+      >
+        <option value="admin">Administrador</option>
+        <option value="hotel">Hotel</option>
+        <option value="client">Cliente</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="status">Estado</label>
+      <select 
+        id="status" 
+        name="status" 
+        [(ngModel)]="user.status" 
+        required
+      >
+        <option value="active">Activo</option>
+        <option value="inactive">Inactivo</option>
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="onCancel()">
+        <fa-icon [icon]="faTimes"></fa-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-primary">
+        <fa-icon [icon]="faSave"></fa-icon>
+        Guardar
+      </button>
+    </div>
+  </form>
+</div> 

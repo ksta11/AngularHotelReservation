@@ -6,6 +6,8 @@ import { ReservationsComponent } from './admin/reservations/reservations.compone
 import { NotificationsComponent } from './admin/notifications/notifications.component';
 import { ReviewsComponent } from './admin/reviews/reviews.component';
 import { ReportsComponent } from './admin/reports/reports.component';
+import { UsersComponent } from './admin/users/users.component';
+import { UserEditComponent } from './admin/users/user-edit/user-edit.component';
 
 export const routes: Routes = [
   {
@@ -38,6 +40,18 @@ export const routes: Routes = [
       {
         path: 'reports',
         component: ReportsComponent
+      },
+      {
+        path: 'users',
+        component: UsersComponent
+      },
+      {
+        path: 'users/new',
+        component: UserEditComponent
+      },
+      {
+        path: 'users/edit/:id',
+        component: UserEditComponent
       }
     ]
   },
@@ -47,11 +61,11 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'auth/login',
+    redirectTo: 'admin/dashboard',
     pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: 'auth/login'
+    redirectTo: 'admin/dashboard'
   }
 ];
