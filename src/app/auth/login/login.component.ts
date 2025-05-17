@@ -45,11 +45,17 @@ export class LoginComponent implements OnInit {
         next: (_response) => {
           this.loading = false;
           
-          // Obtener el usuario actual del servicio de autenticación
-          const currentUser = this.authService.getCurrentUser();
+          // Verificar si hay un token válido
+          if (!this.authService.isAuthenticated()) {
+            this.errorMessage = 'Sesión no válida. Por favor, inicie sesión nuevamente.';
+            return;
+          }
+          
+          // Obtener el rol directamente del token decodificado
+          const userRole = this.authService.getUserRoleFromToken();
           
           // Redirigir según el rol del usuario
-          if (currentUser?.role === 'admin' || currentUser?.role === 'hotel_admin') {
+          if (userRole === 'admin' || userRole === 'hotel_admin') {
             this.router.navigate(['/admin/dashboard']);
           } else {
             this.router.navigate(['/dashboard']);

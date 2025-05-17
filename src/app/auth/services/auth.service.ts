@@ -147,6 +147,22 @@ export class AuthService {
     return localStorage.getItem('accessToken');
   }
   
+  getUserRoleFromToken(): string | null {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+    
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      console.log('Decoded token:', decoded.role);
+      return decoded.role || null;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  }
+  
   private handleError(error: HttpErrorResponse) {
     let errorMessage = '';
     if (error.error instanceof ErrorEvent) {
