@@ -12,17 +12,19 @@ import { ReportsComponent } from './reports/reports.component';
 
 @NgModule({
   declarations: [
-    HotelInfoComponent,
-    DashboardComponent,
-    RoomManagementComponent,
-    ReservationsComponent,
-    NotificationsComponent,
-    ReviewsComponent
+    // No declarations needed for standalone components
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     AdminRoutingModule,
+    // Import standalone components here
+    HotelInfoComponent,
+    DashboardComponent,
+    RoomManagementComponent,
+    ReservationsComponent,
+    NotificationsComponent,
+    ReviewsComponent,
     ReportsComponent
   ]
 })
