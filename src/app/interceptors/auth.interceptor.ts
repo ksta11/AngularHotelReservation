@@ -9,16 +9,22 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = authService.getToken();
   
   // Lista de rutas que no requieren autenticación
-  const publicRoutes = ['/auth/login', '/auth/register'];
+  const publicRoutes = ['/auth/login', '/auth/register', '/client/available-rooms'];
+  
+  // Obtener la ruta actual del router
+  const currentRoute = router.url;
   
   // Verificar si la ruta actual es pública
-  const isPublicRoute = publicRoutes.some(route => req.url.includes(route));
+  const isPublicRoute = publicRoutes.some(route => currentRoute === route);
   
   // Verificar si la ruta es de administración
-  const isAdminRoute = req.url.includes('/admin');
+  const isAdminRoute = currentRoute.startsWith('/admin');
   
-  if (!token && !isPublicRoute) {
-    // Si no hay token y la ruta no es pública, redirigir al login
+  // Verificar si la ruta es del cliente
+  const isClientRoute = currentRoute.startsWith('/client');
+  
+  if (!token && !isPublicRoute && !isClientRoute) {
+    // Si no hay token y la ruta no es pública ni del cliente, redirigir al login
     router.navigate(['/auth/login']);
     return next(req);
   }

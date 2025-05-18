@@ -8,6 +8,7 @@ import { ReviewsComponent } from './admin/reviews/reviews.component';
 import { ReportsComponent } from './admin/reports/reports.component';
 import { UsersComponent } from './admin/users/users.component';
 import { UserEditComponent } from './admin/users/user-edit/user-edit.component';
+import { NewReservationComponent } from './admin/reservations/new-reservation/new-reservation.component';
 
 export const routes: Routes = [
   {
@@ -27,7 +28,16 @@ export const routes: Routes = [
       },
       {
         path: 'reservations',
-        component: ReservationsComponent
+        children: [
+          {
+            path: '',
+            component: ReservationsComponent
+          },
+          {
+            path: 'new',
+            component: NewReservationComponent
+          }
+        ]
       },
       {
         path: 'notifications',
@@ -56,16 +66,20 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'client',
+    loadChildren: () => import('./client/client.module').then(m => m.ClientModule)
+  },
+  {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
   {
     path: '',
-    redirectTo: 'admin/dashboard',
+    redirectTo: 'auth/login',
     pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: 'admin/dashboard'
+    redirectTo: 'auth/login'
   }
 ];

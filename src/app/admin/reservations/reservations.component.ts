@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSearch, faPlus, faEdit, faTrash, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -87,7 +87,7 @@ export class ReservationsComponent implements OnInit {
 
   filteredReservations: Reservation[] = [];
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     this.applyFilters();
@@ -163,5 +163,9 @@ export class ReservationsComponent implements OnInit {
       this.reservations = this.reservations.filter(r => r.id !== id);
       this.applyFilters();
     }
+  }
+
+  onNewReservation(): void {
+    this.router.navigate(['/admin/reservations/new']);
   }
 }
