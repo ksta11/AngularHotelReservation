@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HotelInfoComponent } from './admin/hotel-info/hotel-info.component';
 
 const routes: Routes = [
   {
-    path: 'admin/hotel-info',
-    component: HotelInfoComponent
+    path: 'admin',
+    loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
   },
   {
     path: 'auth',
@@ -13,12 +12,12 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'admin/hotel-info',
+    redirectTo: 'admin/dashboard',
     pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: 'auth/login'
+    redirectTo: 'admin/dashboard'
   }
 ];
 
@@ -26,4 +25,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { } 
+export class AppRoutingModule { }

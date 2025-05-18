@@ -6,6 +6,9 @@ import { ReservationsComponent } from './admin/reservations/reservations.compone
 import { NotificationsComponent } from './admin/notifications/notifications.component';
 import { ReviewsComponent } from './admin/reviews/reviews.component';
 import { ReportsComponent } from './admin/reports/reports.component';
+import { UsersComponent } from './admin/users/users.component';
+import { UserEditComponent } from './admin/users/user-edit/user-edit.component';
+import { NewReservationComponent } from './admin/reservations/new-reservation/new-reservation.component';
 
 export const routes: Routes = [
   {
@@ -25,7 +28,16 @@ export const routes: Routes = [
       },
       {
         path: 'reservations',
-        component: ReservationsComponent
+        children: [
+          {
+            path: '',
+            component: ReservationsComponent
+          },
+          {
+            path: 'new',
+            component: NewReservationComponent
+          }
+        ]
       },
       {
         path: 'notifications',
@@ -38,8 +50,24 @@ export const routes: Routes = [
       {
         path: 'reports',
         component: ReportsComponent
+      },
+      {
+        path: 'users',
+        component: UsersComponent
+      },
+      {
+        path: 'users/new',
+        component: UserEditComponent
+      },
+      {
+        path: 'users/edit/:id',
+        component: UserEditComponent
       }
     ]
+  },
+  {
+    path: 'client',
+    loadChildren: () => import('./client/client.module').then(m => m.ClientModule)
   },
   {
     path: 'auth',

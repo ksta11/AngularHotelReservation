@@ -1,0 +1,69 @@
+<div class="rooms-container">
+  <div class="rooms-header">
+    <h1>Habitaciones Disponibles</h1>
+    
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (input)="onSearch()"
+          placeholder="Buscar por número o tipo de habitación..."
+        >
+      </div>
+
+      <div class="filter-controls">
+        <select [(ngModel)]="selectedType" (change)="onTypeChange()">
+          <option value="todos">Todos los tipos</option>
+          <option value="suite">Suite</option>
+          <option value="deluxe">Deluxe</option>
+          <option value="estandar">Estándar</option>
+        </select>
+
+        <select [(ngModel)]="selectedPrice" (change)="onPriceChange()">
+          <option value="todos">Todos los precios</option>
+          <option value="economico">Económico</option>
+          <option value="medio">Medio</option>
+          <option value="premium">Premium</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid de Habitaciones -->
+  <div class="rooms-grid">
+    <div class="room-card" *ngFor="let room of filteredRooms">
+      <div class="room-image">
+        <img [src]="room.images[0]" [alt]="'Habitación ' + room.number">
+      </div>
+      
+      <div class="room-info">
+        <h3>Habitación {{room.number}}</h3>
+        <p class="room-type">{{room.type}}</p>
+        
+        <div class="room-details">
+          <span class="capacity">
+            <i class="fas fa-user"></i> {{room.capacity}} personas
+          </span>
+          <span class="price">
+            ${{room.price}} / noche
+          </span>
+        </div>
+
+        <div class="amenities">
+          <span *ngFor="let amenity of room.amenities" class="amenity-tag">
+            {{amenity}}
+          </span>
+        </div>
+
+        <button 
+          class="reserve-btn" 
+          (click)="onReserve(room.id)"
+          [disabled]="!room.available">
+          {{room.available ? 'Reservar' : 'No disponible'}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 
