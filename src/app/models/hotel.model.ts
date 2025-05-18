@@ -24,6 +24,7 @@ export interface Hotel {
   amenities: string[];
   images: string[];
   rating?: number;
+  userId?: string;         // ID del usuario propietario
   createdAt?: Date;
   updatedAt?: Date;
-} 
+}

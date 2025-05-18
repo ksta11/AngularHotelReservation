@@ -56,9 +56,16 @@ export class HotelInfoComponent implements OnInit {
     // Aquí podrías cargar los datos del hotel si ya existen
   }  onSubmit(): void {
     if (this.hotelForm.valid) {
-      // Obtener el usuario actual con el email desde el servicio de autenticación
+      // Obtener el usuario actual con el email y userId desde el servicio de autenticación
       const currentUser = this.authService.getCurrentUser();
       const email = currentUser?.email || '';
+      const userId = currentUser?.id || '';
+      
+      if (!userId) {
+        console.error('No se pudo obtener el ID del usuario desde el token');
+        alert('Error: No se pudo identificar al usuario. Intente iniciar sesión nuevamente.');
+        return;
+      }
       
       // Crear objeto final con los datos del formulario y el email desde el token
       const formValue = this.hotelForm.value;
@@ -72,10 +79,10 @@ export class HotelInfoComponent implements OnInit {
         postalCode: formValue.address.zipCode,
         phone: formValue.contactInfo.phone,
         email: email,
-        averageRating: 0,
         checkInTime: formValue.policies.checkInTime,
         checkOutTime: formValue.policies.checkOutTime,
-        cancellationPolicy: formValue.policies.cancellationPolicy
+        cancellationPolicy: formValue.policies.cancellationPolicy,
+        userId: userId
       };
       
       console.log('Enviando datos del hotel:', hotelData);
