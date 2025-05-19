@@ -50,15 +50,22 @@ export class LoginComponent implements OnInit {
             this.errorMessage = 'Sesión no válida. Por favor, inicie sesión nuevamente.';
             return;
           }
-          
-          // Obtener el rol directamente del token decodificado
+            // Obtener el rol directamente del token decodificado
           const userRole = this.authService.getUserRoleFromToken();
           
           // Redirigir según el rol del usuario
-          if (userRole === 'admin' || userRole === 'hotel_admin') {
-            this.router.navigate(['/admin/dashboard']);
-          } else {
-            this.router.navigate(['/dashboard']);
+          switch (userRole) {
+            case 'admin':
+              this.router.navigate(['/admin/dashboard']);
+              break;
+            case 'hotel_admin':
+              this.router.navigate(['/admin/hotel-info']);
+              break;
+            case 'client':
+              this.router.navigate(['/client/dashboard']);
+              break;
+            default:
+              this.router.navigate(['/dashboard']);
           }
         },
         error: (error) => {

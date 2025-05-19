@@ -9,25 +9,59 @@ import { ReportsComponent } from './admin/reports/reports.component';
 import { UsersComponent } from './admin/users/users.component';
 import { UserEditComponent } from './admin/users/user-edit/user-edit.component';
 import { NewReservationComponent } from './admin/reservations/new-reservation/new-reservation.component';
+import { AuthGuard } from './auth/guards/auth.guard';
+import { RoleGuard } from './auth/guards/role.guard';
+import { AccessDeniedComponent } from './shared/access-denied/access-denied.component';
+import { MainLayoutComponent } from './shared/layouts/main-layout/main-layout.component';
+
+import { AdminLayoutComponent } from './admin/shared/layout/admin-layout.component';
 
 export const routes: Routes = [
+  // Rutas principales dentro del MainLayoutComponent
+  {
+    path: '',
+    component: MainLayoutComponent,
+    children: [
+      {
+        path: 'access-denied',
+        component: AccessDeniedComponent
+      },
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'auth/login'
+      }
+    ]
+  },
+  
+  // Ruta de admin con su propio layout
   {
     path: 'admin',
+    component: AdminLayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'hotel-info',
-        component: HotelInfoComponent
+        component: HotelInfoComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['hotel_admin', 'admin'] }
       },
       {
         path: 'room-management',
-        component: RoomManagementComponent
+        component: RoomManagementComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['hotel_admin', 'admin'] }
       },
       {
         path: 'dashboard',
-        component: DashboardComponent
+        component: DashboardComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['hotel_admin', 'admin'] }
       },
       {
         path: 'reservations',
+        canActivate: [RoleGuard],
+        data: { roles: ['hotel_admin', 'admin'] },
         children: [
           {
             path: '',
@@ -38,46 +72,70 @@ export const routes: Routes = [
             component: NewReservationComponent
           }
         ]
-      },
-      {
+      },      {
         path: 'notifications',
-        component: NotificationsComponent
+        component: NotificationsComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
       },
       {
         path: 'reviews',
-        component: ReviewsComponent
+        component: ReviewsComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['hotel_admin', 'admin'] }
       },
       {
         path: 'reports',
-        component: ReportsComponent
+        component: ReportsComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['hotel_admin', 'admin'] }
       },
       {
         path: 'users',
-        component: UsersComponent
+        component: UsersComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
       },
       {
         path: 'users/new',
-        component: UserEditComponent
+        component: UserEditComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
       },
       {
         path: 'users/edit/:id',
-        component: UserEditComponent
+        component: UserEditComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
+      }
+    ]
+  },  // Ruta de client dentro del MainLayoutComponent
+  {
+    path: 'client',
+    component: MainLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./client/client.module').then(m => m.ClientModule),
+        canActivate: [AuthGuard],
+        data: { roles: ['client'] }
       }
     ]
   },
-  {
-    path: 'client',
-    loadChildren: () => import('./client/client.module').then(m => m.ClientModule)
-  },
+
+  // Ruta de auth dentro del MainLayoutComponent (login y registro)
   {
     path: 'auth',
-    loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
+    component: MainLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
+      }
+    ]
   },
-  {
-    path: '',
-    redirectTo: 'auth/login',
-    pathMatch: 'full'
-  },
+
+  // Redirecciones y ruta por defecto
   {
     path: '**',
     redirectTo: 'auth/login'

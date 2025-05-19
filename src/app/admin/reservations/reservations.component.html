@@ -8,14 +8,24 @@
       </button>
     </div>
 
+    <!-- Mensaje de carga -->
+    <div *ngIf="loading" class="loading-container">
+      <p>Cargando reservas...</p>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div *ngIf="error" class="error-container">
+      <p>{{error}}</p>
+      <button class="btn btn-sm btn-primary" (click)="error = null">Cerrar</button>
+    </div>
+
     <!-- Filtros -->
     <div class="filters-section">
-      <div class="search-box">
-        <input 
+      <div class="search-box">        <input 
           type="text" 
           [(ngModel)]="searchTerm" 
           (input)="onSearch()"
-          placeholder="Buscar por nombre, habitación o email..."
+          placeholder="Buscar por habitación o email..."
         >
         <fa-icon [icon]="faSearch"></fa-icon>
       </div>
@@ -37,11 +47,10 @@
     </div>
 
     <!-- Tabla de Reservas -->
-    <div class="reservations-table">
-      <table>
+    <div class="reservations-table" *ngIf="!loading && filteredReservations.length > 0">      <table>
         <thead>
           <tr>
-            <th>Huésped</th>
+            <th>Contacto</th>
             <th>Habitación</th>
             <th>Check-in</th>
             <th>Check-out</th>
@@ -51,19 +60,14 @@
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody>
-          <tr *ngFor="let reservation of filteredReservations">
-            <td>
+        <tbody>          <tr *ngFor="let reservation of filteredReservations">            <td>
               <div class="guest-info">
-                <strong>{{reservation.guestName}}</strong>
                 <span>{{reservation.email}}</span>
-                <span>{{reservation.phone}}</span>
               </div>
             </td>
             <td>
               <div class="room-info">
                 <strong>{{reservation.roomNumber}}</strong>
-                <span>{{reservation.roomType}}</span>
               </div>
             </td>
             <td>{{reservation.checkIn | date}}</td>
@@ -84,7 +88,7 @@
                 <button class="btn btn-icon" title="Editar">
                   <fa-icon [icon]="faEdit"></fa-icon>
                 </button>
-                <button class="btn btn-icon" title="Eliminar" (click)="onDeleteReservation(reservation.id)">
+                <button class="btn btn-icon" title="Eliminar" (click)="reservation.id && onDeleteReservation(reservation.id)">
                   <fa-icon [icon]="faTrash"></fa-icon>
                 </button>
               </div>
@@ -92,6 +96,11 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Mensaje sin reservas -->
+    <div *ngIf="!loading && filteredReservations.length === 0" class="no-data">
+      <p>No hay reservas que coincidan con los filtros seleccionados.</p>
     </div>
   </div>
 </div>

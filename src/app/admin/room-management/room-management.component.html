@@ -5,36 +5,44 @@
         <h2>{{ isEditing ? 'Editar Habitación' : 'Nueva Habitación' }}</h2>
       </div>
 
+      <!-- Agregando mensajes de carga y error -->
+      <div *ngIf="loading" class="loading-container">
+        <p>Cargando...</p>
+      </div>
+
+      <div *ngIf="error" class="error-container">
+        <p>{{ error }}</p>
+        <button class="btn btn-sm btn-primary" (click)="error = null">Cerrar</button>
+      </div>
+
       <div class="room-management-content">
         <form [formGroup]="roomForm" (ngSubmit)="onSubmit()" class="room-form">
           <div class="form-row">
-            <div class="form-field">
-              <label for="number">Número de Habitación</label>
+            <div class="form-field">              <label for="roomNumber">Número de Habitación</label>
               <input 
                 type="text" 
-                id="number" 
-                formControlName="number" 
+                id="roomNumber" 
+                formControlName="roomNumber" 
                 placeholder="Ej: 101"
-                [ngClass]="{'is-invalid': roomForm.get('number')?.invalid && roomForm.get('number')?.touched}"
+                [ngClass]="{'is-invalid': roomForm.get('roomNumber')?.invalid && roomForm.get('roomNumber')?.touched}"
               >
-              <div class="invalid-feedback" *ngIf="roomForm.get('number')?.invalid && roomForm.get('number')?.touched">
+              <div class="invalid-feedback" *ngIf="roomForm.get('roomNumber')?.invalid && roomForm.get('roomNumber')?.touched">
                 El número de habitación es requerido y debe tener 3 dígitos
               </div>
             </div>
 
-            <div class="form-field">
-              <label for="type">Tipo de Habitación</label>
+            <div class="form-field">              <label for="roomType">Tipo de Habitación</label>
               <select 
-                id="type" 
-                formControlName="type"
-                [ngClass]="{'is-invalid': roomForm.get('type')?.invalid && roomForm.get('type')?.touched}"
+                id="roomType" 
+                formControlName="roomType"
+                [ngClass]="{'is-invalid': roomForm.get('roomType')?.invalid && roomForm.get('roomType')?.touched}"
               >
                 <option value="">Seleccione un tipo</option>
                 <option *ngFor="let type of roomTypes" [value]="type">
                   {{type}}
                 </option>
               </select>
-              <div class="invalid-feedback" *ngIf="roomForm.get('type')?.invalid && roomForm.get('type')?.touched">
+              <div class="invalid-feedback" *ngIf="roomForm.get('roomType')?.invalid && roomForm.get('roomType')?.touched">
                 El tipo de habitación es requerido
               </div>
             </div>
@@ -94,19 +102,18 @@
             >
           </div>
 
-          <div class="form-field">
-            <label for="status">Estado</label>
+          <div class="form-field">            <label for="state">Estado</label>
             <select 
-              id="status" 
-              formControlName="status"
-              [ngClass]="{'is-invalid': roomForm.get('status')?.invalid && roomForm.get('status')?.touched}"
+              id="state" 
+              formControlName="state"
+              [ngClass]="{'is-invalid': roomForm.get('state')?.invalid && roomForm.get('state')?.touched}"
             >
               <option value="">Seleccione un estado</option>
               <option *ngFor="let status of roomStatuses" [value]="status">
                 {{status}}
               </option>
             </select>
-            <div class="invalid-feedback" *ngIf="roomForm.get('status')?.invalid && roomForm.get('status')?.touched">
+            <div class="invalid-feedback" *ngIf="roomForm.get('state')?.invalid && roomForm.get('state')?.touched">
               El estado es requerido
             </div>
           </div>
@@ -121,7 +128,13 @@
 
         <div class="rooms-list">
           <h3>Habitaciones Existentes</h3>
-          <div class="table-responsive">
+          
+          <!-- Mostrar mensaje si no hay habitaciones -->
+          <div *ngIf="rooms.length === 0 && !loading" class="no-rooms-message">
+            <p>No hay habitaciones registradas</p>
+          </div>
+
+          <div class="table-responsive" *ngIf="rooms.length > 0">
             <table class="table">
               <thead>
                 <tr>
@@ -133,23 +146,21 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr *ngFor="let room of rooms">
-                  <td>{{room.number}}</td>
-                  <td>{{room.type}}</td>
+              <tbody>                <tr *ngFor="let room of rooms">
+                  <td>{{room.roomNumber}}</td>
+                  <td>{{room.roomType}}</td>
                   <td>{{room.capacity}}</td>
                   <td>${{room.price}}</td>
                   <td>
                     <span class="badge" [ngClass]="{
-                      'badge-success': room.status === 'AVAILABLE',
-                      'badge-danger': room.status === 'OCCUPIED',
-                      'badge-warning': room.status === 'MAINTENANCE',
-                      'badge-info': room.status === 'RESERVED'
+                      'badge-success': room.state === 'available',
+                      'badge-danger': room.state === 'occupied',
+                      'badge-warning': room.state === 'maintenance',
+                      'badge-info': room.state === 'reserved'
                     }">
-                      {{room.status}}
+                      {{room.state}}
                     </span>
-                  </td>
-                  <td>
+                  </td>                  <td>
                     <button class="btn btn-sm btn-primary" (click)="editRoom(room)">Editar</button>
                     <button class="btn btn-sm btn-danger" (click)="deleteRoom(room.id!)">Eliminar</button>
                   </td>

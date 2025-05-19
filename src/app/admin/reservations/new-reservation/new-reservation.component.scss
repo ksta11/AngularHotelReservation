@@ -18,6 +18,47 @@
     }
   }
 
+  // Contenedores de carga y error
+  .loading-container {
+    text-align: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #e9f5ff;
+    border-radius: 4px;
+    color: #0066cc;
+  }
+
+  .error-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #ffe9e9;
+    border-radius: 4px;
+    color: #cc0000;
+
+    button {
+      background-color: #cc0000;
+      color: white;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #aa0000;
+      }
+    }
+  }
+
+  // Mensaje de error para campos inválidos
+  .error-message {
+    color: #cc0000;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+
   .form-group {
     margin-bottom: 1.5rem;
 
@@ -122,4 +163,4 @@
       }
     }
   }
-} 
+}

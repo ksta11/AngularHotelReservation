@@ -14,7 +14,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./hotel-info.component.scss']
 })
 export class HotelInfoComponent implements OnInit {
+  hotel: Hotel | null = null;
+  loading: boolean = true;
+  error: string | null = null;
   hotelForm: FormGroup;
+  isEditMode: boolean = false;
+  
   amenities: string[] = [
     'WiFi Gratuito',
     'Piscina',
@@ -25,12 +30,14 @@ export class HotelInfoComponent implements OnInit {
     'Spa',
     'Salón de Eventos'
   ];
+  
   constructor(
     private fb: FormBuilder, 
     private authService: AuthService,
     private hotelService: HotelService,
     private router: Router
   ) {
+    // Inicializar el formulario vacío para edición posterior
     this.hotelForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
@@ -50,12 +57,61 @@ export class HotelInfoComponent implements OnInit {
       }),
       selectedAmenities: this.fb.array([])
     });
+  }  ngOnInit(): void {
+    this.loadHotelData();
   }
-
-  ngOnInit(): void {
-    // Aquí podrías cargar los datos del hotel si ya existen
-  }  onSubmit(): void {
-    if (this.hotelForm.valid) {
+  
+  loadHotelData(): void {
+    // Obtenemos el userId del usuario autenticado actual
+    const currentUser = this.authService.getCurrentUser();
+    const userId = currentUser?.id;
+    
+    if (!userId) {
+      this.error = 'No se pudo obtener la información del usuario. Inicie sesión nuevamente.';
+      this.loading = false;
+      return;
+    }
+    
+    // Obtener el hotel asociado al usuario actual
+    this.hotelService.getHotelByUserId(userId).subscribe({
+      next: (hotel: Hotel) => {
+        this.hotel = hotel;
+        this.loading = false;
+        
+        // Si tenemos datos del hotel, pre-llenamos el formulario para una posible edición
+        if (hotel) {
+          this.hotelForm.patchValue({
+            name: hotel.name,
+            description: hotel.description,
+            address: {
+              street: hotel.address,
+              city: hotel.city,
+              country: hotel.country,
+              zipCode: hotel.postalCode
+            },
+            contactInfo: {
+              phone: hotel.phone
+            },
+            policies: {
+              checkInTime: hotel.checkInTime,
+              checkOutTime: hotel.checkOutTime,
+              cancellationPolicy: hotel.cancellationPolicy
+            }
+          });
+        }
+      },
+      error: (error: any) => {
+        this.error = 'Error al cargar la información del hotel: ' + error;
+        this.loading = false;
+      }
+    });
+  }
+  
+  toggleEditMode(): void {
+    this.isEditMode = !this.isEditMode;
+  }
+    onSubmit(): void {
+    if (this.hotelForm.valid && this.hotel?.id) {
       // Obtener el usuario actual con el email y userId desde el servicio de autenticación
       const currentUser = this.authService.getCurrentUser();
       const email = currentUser?.email || '';
@@ -67,10 +123,9 @@ export class HotelInfoComponent implements OnInit {
         return;
       }
       
-      // Crear objeto final con los datos del formulario y el email desde el token
+      // Formatear los datos del formulario
       const formValue = this.hotelForm.value;
-        // Formatear los datos según la estructura esperada por la API
-      const hotelData = {
+      const hotelData: Partial<Hotel> = {
         name: formValue.name,
         address: formValue.address.street,
         description: formValue.description,
@@ -85,21 +140,18 @@ export class HotelInfoComponent implements OnInit {
         userId: userId
       };
       
-      console.log('Enviando datos del hotel:', hotelData);
-      
-      // Llamar al servicio para crear el hotel
-      this.hotelService.createHotel(hotelData).subscribe({
+      // Actualizar el hotel existente en lugar de crear uno nuevo
+      this.hotelService.updateHotel(this.hotel.id, hotelData).subscribe({
         next: (response) => {
-          console.log('Hotel creado correctamente:', response);
-          // Redirigir al dashboard o a otra página tras la creación exitosa
-          this.router.navigate(['/admin/dashboard']);
+          console.log('Hotel actualizado correctamente:', response);
+          this.hotel = response;
+          this.isEditMode = false;
+          alert('¡Información del hotel actualizada correctamente!');
         },
-        error: (error) => {
-          console.error('Error al crear el hotel:', error);
-          // Aquí podrías mostrar un mensaje de error al usuario
-          alert('Error al crear el hotel: ' + error);
-        }
-      });
+        error: (error: any) => {
+          console.error('Error al actualizar el hotel:', error);
+          alert('Error al actualizar el hotel: ' + error);
+        }      });
     } else {
       // Marcar todos los campos como tocados para mostrar los errores de validación
       this.markFormGroupTouched(this.hotelForm);

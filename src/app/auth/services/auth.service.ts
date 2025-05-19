@@ -110,10 +110,10 @@ export class AuthService {
         catchError(this.handleError)
       );
   }
-
   logout(): void {
     if (this.isBrowser) {
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('hotelId'); // También eliminamos el ID del hotel
     }
     this.currentUserSubject.next(null);
   }

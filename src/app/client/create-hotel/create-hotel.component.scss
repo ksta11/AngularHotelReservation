@@ -1,0 +1,168 @@
+.create-hotel-container {
+  padding: 2rem 1rem;
+}
+
+.create-hotel-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.create-hotel-card {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1.25rem 1.5rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #212529;
+  }
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.info-message {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #212529;
+  }
+  
+  p {
+    margin-bottom: 0.75rem;
+    color: #495057;
+    line-height: 1.5;
+  }
+}
+
+.alert-warning {
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffecb5;
+  border-radius: 0.25rem;
+  color: #664d03;
+}
+
+.form-section {
+  margin-bottom: 1.5rem;
+  
+  h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #343a40;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.5rem;
+  }
+}
+
+.form-field {
+  margin-bottom: 1rem;
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #212529;
+  }
+  
+  input, textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    
+    &:focus {
+      outline: none;
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    &.ng-invalid.ng-touched {
+      border-color: #dc3545;
+    }
+  }
+  
+  textarea {
+    resize: vertical;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  
+  .form-field {
+    flex: 1;
+  }
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  
+  span {
+    display: block;
+    line-height: 1.5;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+  
+  .btn-primary {
+    background-color: #0d6efd;
+    color: #fff;
+    
+    &:hover:not(:disabled) {
+      background-color: #0b5ed7;
+    }
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+    
+    &:hover {
+      background-color: #5c636a;
+    }
+  }
+}

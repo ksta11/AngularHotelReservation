@@ -1,54 +1,65 @@
 <div class="new-reservation-container">
   <div class="form-wrapper">
     <h2>Nueva Reserva</h2>
-    <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="guestName">Nombre del Huésped</label>
-        <input type="text" id="guestName" formControlName="guestName" class="form-control">
-      </div>
+    
+    <!-- Mensaje de carga -->
+    <div *ngIf="loading" class="loading-container">
+      <p>Creando reserva...</p>
+    </div>
 
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" formControlName="email" class="form-control">
-      </div>
+    <!-- Mensaje de error -->
+    <div *ngIf="error" class="error-container">
+      <p>{{error}}</p>
+      <button class="btn btn-sm btn-primary" (click)="error = null">Cerrar</button>
+    </div>
 
-      <div class="form-group">
-        <label for="phone">Teléfono</label>
-        <input type="tel" id="phone" formControlName="phone" class="form-control">
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="roomNumber">Número de Habitación</label>
-          <input type="text" id="roomNumber" formControlName="roomNumber" class="form-control">
+    <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">      <div class="form-group">
+        <label for="userEmail">Email del Cliente</label>
+        <input type="email" id="userEmail" formControlName="userEmail" class="form-control">
+        <div *ngIf="reservationForm.get('userEmail')?.invalid && reservationForm.get('userEmail')?.touched" class="error-message">
+          Email válido requerido
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="roomType">Tipo de Habitación</label>
-          <select id="roomType" formControlName="roomType" class="form-control">
-            <option value="">Seleccione un tipo</option>
-            <option value="standard">Estándar</option>
-            <option value="deluxe">Deluxe</option>
-            <option value="suite">Suite</option>
-          </select>
+      <div class="form-group">
+        <label for="roomNumber">Número de Habitación</label>
+        <input type="text" id="roomNumber" formControlName="roomNumber" class="form-control">
+        <div *ngIf="reservationForm.get('roomNumber')?.invalid && reservationForm.get('roomNumber')?.touched" class="error-message">
+          Número de habitación requerido
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="checkIn">Check-in</label>
-          <input type="date" id="checkIn" formControlName="checkIn" class="form-control">
+          <label for="checkInDate">Fecha de Check-in</label>
+          <input type="datetime-local" id="checkInDate" formControlName="checkInDate" class="form-control">
+          <div *ngIf="reservationForm.get('checkInDate')?.invalid && reservationForm.get('checkInDate')?.touched" class="error-message">
+            Fecha de check-in requerida
+          </div>
         </div>
 
         <div class="form-group">
-          <label for="checkOut">Check-out</label>
-          <input type="date" id="checkOut" formControlName="checkOut" class="form-control">
+          <label for="checkOutDate">Fecha de Check-out</label>
+          <input type="datetime-local" id="checkOutDate" formControlName="checkOutDate" class="form-control">
+          <div *ngIf="reservationForm.get('checkOutDate')?.invalid && reservationForm.get('checkOutDate')?.touched" class="error-message">
+            Fecha de check-out requerida
+          </div>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="totalAmount">Monto Total</label>
-        <input type="number" id="totalAmount" formControlName="totalAmount" class="form-control">
+        <label for="totalPrice">Precio Total</label>
+        <input type="number" id="totalPrice" formControlName="totalPrice" class="form-control">
+        <div *ngIf="reservationForm.get('totalPrice')?.invalid && reservationForm.get('totalPrice')?.touched" class="error-message">
+          Precio total válido requerido (mayor a 0)
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="paymentStatus">Estado del Pago</label>
+        <select id="paymentStatus" formControlName="paymentStatus" class="form-control">
+          <option *ngFor="let option of paymentStatusOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
       </div>
 
       <div class="form-group">
@@ -57,9 +68,9 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="!reservationForm.valid">Crear Reserva</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!reservationForm.valid || loading">Crear Reserva</button>
         <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancelar</button>
       </div>
     </form>
   </div>
-</div> 
+</div>

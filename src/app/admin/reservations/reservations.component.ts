@@ -4,21 +4,10 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSearch, faPlus, faEdit, faTrash, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-
-interface Reservation {
-  id: number;
-  guestName: string;
-  email: string;
-  phone: string;
-  roomNumber: string;
-  roomType: string;
-  checkIn: string;
-  checkOut: string;
-  status: 'Confirmada' | 'Pendiente' | 'Cancelada';
-  totalAmount: number;
-  paymentStatus: 'Pagado' | 'Pendiente' | 'Parcial';
-  specialRequests?: string;
-}
+import { Reservation, ReservationStatus, PaymentStatus } from '../../models/reservation.model';
+import { ReservationService } from '../../services/reservation.service';
+import { HotelService } from '../../services/hotel.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-reservations',
@@ -41,63 +30,56 @@ export class ReservationsComponent implements OnInit {
   statusFilter: string = 'todos';
   dateFilter: string = 'todos';
 
-  // Datos de ejemplo
-  reservations: Reservation[] = [
-    {
-      id: 1,
-      guestName: 'Juan Pérez',
-      email: 'juan@email.com',
-      phone: '123-456-7890',
-      roomNumber: '101',
-      roomType: 'Suite',
-      checkIn: '2024-03-20',
-      checkOut: '2024-03-25',
-      status: 'Confirmada',
-      totalAmount: 1500,
-      paymentStatus: 'Pagado',
-      specialRequests: 'Cama king size'
-    },
-    {
-      id: 2,
-      guestName: 'María García',
-      email: 'maria@email.com',
-      phone: '987-654-3210',
-      roomNumber: '203',
-      roomType: 'Doble',
-      checkIn: '2024-03-21',
-      checkOut: '2024-03-23',
-      status: 'Pendiente',
-      totalAmount: 600,
-      paymentStatus: 'Pendiente'
-    },
-    {
-      id: 3,
-      guestName: 'Carlos López',
-      email: 'carlos@email.com',
-      phone: '555-123-4567',
-      roomNumber: '305',
-      roomType: 'Individual',
-      checkIn: '2024-03-22',
-      checkOut: '2024-03-24',
-      status: 'Confirmada',
-      totalAmount: 400,
-      paymentStatus: 'Parcial'
-    }
-  ];
-
+  // Datos y estado
+  reservations: Reservation[] = [];
   filteredReservations: Reservation[] = [];
+  loading: boolean = false;
+  error: string | null = null;
+  hotelId: string | null = null;
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private reservationService: ReservationService,
+    private hotelService: HotelService
+  ) { }
 
   ngOnInit(): void {
-    this.applyFilters();
+    // Obtenemos el ID del hotel desde localStorage
+    this.hotelId = this.hotelService.getHotelIdFromStorage();
+    if (this.hotelId) {
+      this.loadReservations();
+    } else {
+      this.error = 'No se ha encontrado un hotel asociado a tu cuenta';
+    }
   }
 
-  applyFilters(): void {
+  loadReservations(): void {
+    if (!this.hotelId) return;
+
+    this.loading = true;
+    const params = {
+      status: this.statusFilter !== 'todos' ? this.statusFilter : undefined,
+      dateFilter: this.dateFilter !== 'todos' ? this.dateFilter : undefined,
+      search: this.searchTerm || undefined
+    };
+
+    this.reservationService.getReservations(this.hotelId, params)
+      .pipe(
+        finalize(() => this.loading = false)
+      )
+      .subscribe({
+        next: (reservations) => {
+          this.reservations = reservations;
+          this.applyFilters();
+        },
+        error: (err) => {
+          this.error = 'Error al cargar las reservas: ' + err;
+        }
+      });
+  }  applyFilters(): void {
     this.filteredReservations = this.reservations.filter(reservation => {
       const matchesSearch = this.searchTerm === '' || 
-        reservation.guestName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        reservation.roomNumber.includes(this.searchTerm) ||
+        (reservation.roomNumber && reservation.roomNumber.includes(this.searchTerm)) ||
         reservation.email.toLowerCase().includes(this.searchTerm.toLowerCase());
 
       const matchesStatus = this.statusFilter === 'todos' || 
@@ -147,21 +129,46 @@ export class ReservationsComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.applyFilters();
+    if (this.hotelId) {
+      this.loadReservations();
+    } else {
+      this.applyFilters();
+    }
   }
 
   onStatusFilterChange(): void {
-    this.applyFilters();
+    if (this.hotelId) {
+      this.loadReservations();
+    } else {
+      this.applyFilters();
+    }
   }
 
   onDateFilterChange(): void {
-    this.applyFilters();
-  }
-
-  onDeleteReservation(id: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar esta reserva?')) {
-      this.reservations = this.reservations.filter(r => r.id !== id);
+    if (this.hotelId) {
+      this.loadReservations();
+    } else {
       this.applyFilters();
+    }
+  }
+  onDeleteReservation(id: string | undefined): void {
+    if (!this.hotelId || !id) return;
+
+    if (confirm('¿Estás seguro de que deseas eliminar esta reserva?')) {
+      this.loading = true;
+      this.reservationService.deleteReservation(this.hotelId, id)
+        .pipe(
+          finalize(() => this.loading = false)
+        )
+        .subscribe({
+          next: () => {
+            this.reservations = this.reservations.filter(r => r.id !== id);
+            this.applyFilters();
+          },
+          error: (err) => {
+            this.error = 'Error al eliminar la reserva: ' + err;
+          }
+        });
     }
   }
 
