@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { AvailableRoomsComponent } from './available-rooms/available-rooms.component';
 import { CreateHotelComponent } from './create-hotel/create-hotel.component';
 import { RoleGuard } from '../auth/guards/role.guard';
+import { MyReservationsComponent } from './my-reservations/my-reservations.component';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
   {
@@ -13,22 +15,17 @@ const routes: Routes = [
   },
   {
     path: 'bookings',
-    component: AvailableRoomsComponent, // Temporalmente usando este componente, debería reemplazarse por el real
+    component: MyReservationsComponent,
     canActivate: [RoleGuard],
     data: { roles: ['client'] }
   },
   {
     path: 'profile',
-    component: AvailableRoomsComponent, // Temporalmente usando este componente, debería reemplazarse por el real
+    component: ProfileComponent,
     canActivate: [RoleGuard],
     data: { roles: ['client'] }
   },
   {
-    path: 'search',
-    component: AvailableRoomsComponent, // Temporalmente usando este componente, debería reemplazarse por el real
-    canActivate: [RoleGuard],
-    data: { roles: ['client'] }
-  },  {
     path: 'dashboard',
     component: AvailableRoomsComponent, // Temporalmente usando este componente, debería reemplazarse por el real
     canActivate: [RoleGuard],

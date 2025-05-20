@@ -56,12 +56,6 @@ import {
               </a>
             </li>
             <li>
-              <a routerLink="/client/search" routerLinkActive="active">
-                <fa-icon [icon]="faSearch"></fa-icon>
-                <span>Buscar Hoteles</span>
-              </a>
-            </li>
-            <li>
               <a routerLink="/client/bookings" routerLinkActive="active">
                 <fa-icon [icon]="faBookmark"></fa-icon>
                 <span>Mis Reservas</span>
