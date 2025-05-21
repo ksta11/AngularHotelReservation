@@ -1,0 +1,85 @@
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Encuentra tu Hotel Perfecto</h1>
+    <p>Reserva de manera fácil y rápida los mejores hoteles para tu próxima aventura</p>
+    <button class="cta-button" routerLink="/auth/register">
+      Comenzar Ahora
+      <fa-icon [icon]="faArrowRight"></fa-icon>
+    </button>
+  </div>
+</section>
+
+<!-- Características Principales -->
+<section class="features">
+  <h2>¿Por qué elegirnos?</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <fa-icon [icon]="faSearch" size="2x"></fa-icon>
+      <h3>Búsqueda Fácil</h3>
+      <p>Encuentra el hotel perfecto con nuestro sistema de búsqueda intuitivo</p>
+    </div>
+    <div class="feature-card">
+      <fa-icon [icon]="faCalendarCheck" size="2x"></fa-icon>
+      <h3>Reservas Instantáneas</h3>
+      <p>Confirma tu reserva en segundos con nuestro sistema seguro</p>
+    </div>
+    <div class="feature-card">
+      <fa-icon [icon]="faUserClock" size="2x"></fa-icon>
+      <h3>Gestión de Reservas</h3>
+      <p>Administra tus reservas de manera sencilla desde tu perfil</p>
+    </div>
+    <div class="feature-card">
+      <fa-icon [icon]="faHeadset" size="2x"></fa-icon>
+      <h3>Soporte 24/7</h3>
+      <p>Nuestro equipo está disponible para ayudarte en cualquier momento</p>
+    </div>
+  </div>
+</section>
+
+<!-- Hoteles Destacados -->
+<section class="featured-hotels">
+  <h2>Hoteles Destacados</h2>
+  <div class="hotels-grid">
+    <div class="hotel-card" *ngFor="let hotel of featuredHotels">
+      <div class="hotel-image">
+        <img [src]="hotel.image" [alt]="hotel.name">
+      </div>
+      <div class="hotel-info">
+        <h3>{{ hotel.name }}</h3>
+        <div class="rating">
+          <fa-icon [icon]="faStar" *ngFor="let star of [].constructor(Math.floor(hotel.rating))"></fa-icon>
+          <span>{{ hotel.rating }}</span>
+        </div>
+        <p>{{ hotel.description }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonios -->
+<section class="testimonials">
+  <h2>Lo que dicen nuestros clientes</h2>
+  <div class="testimonials-grid">
+    <div class="testimonial-card" *ngFor="let testimonial of testimonials">
+      <fa-icon [icon]="faQuoteLeft" class="quote-icon"></fa-icon>
+      <p class="comment">{{ testimonial.comment }}</p>
+      <div class="rating">
+        <fa-icon [icon]="faStar" *ngFor="let star of [].constructor(testimonial.rating)"></fa-icon>
+      </div>
+      <p class="author">{{ testimonial.name }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta">
+  <div class="cta-content">
+    <h2>¿Listo para comenzar?</h2>
+    <p>Únete a nuestra comunidad y descubre los mejores hoteles</p>
+    <button class="cta-button" routerLink="/auth/register">
+      Crear Cuenta
+      <fa-icon [icon]="faArrowRight"></fa-icon>
+    </button>
+  </div>
+</section>

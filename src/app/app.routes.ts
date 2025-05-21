@@ -13,7 +13,7 @@ import { AuthGuard } from './auth/guards/auth.guard';
 import { RoleGuard } from './auth/guards/role.guard';
 import { AccessDeniedComponent } from './shared/access-denied/access-denied.component';
 import { MainLayoutComponent } from './shared/layouts/main-layout/main-layout.component';
-
+import { HomeComponent } from './home/home.component';
 import { AdminLayoutComponent } from './admin/shared/layout/admin-layout.component';
 
 export const routes: Routes = [
@@ -28,8 +28,7 @@ export const routes: Routes = [
       },
       {
         path: '',
-        pathMatch: 'full',
-        redirectTo: 'auth/login'
+        component: HomeComponent
       }
     ]
   },
@@ -72,7 +71,8 @@ export const routes: Routes = [
             component: NewReservationComponent
           }
         ]
-      },      {
+      },
+      {
         path: 'notifications',
         component: NotificationsComponent,
         canActivate: [RoleGuard],
@@ -109,7 +109,8 @@ export const routes: Routes = [
         data: { roles: ['admin'] }
       }
     ]
-  },  // Ruta de client dentro del MainLayoutComponent
+  },
+  // Ruta de client dentro del MainLayoutComponent
   {
     path: 'client',
     component: MainLayoutComponent,
@@ -138,6 +139,6 @@ export const routes: Routes = [
   // Redirecciones y ruta por defecto
   {
     path: '**',
-    redirectTo: 'auth/login'
+    redirectTo: ''
   }
 ];

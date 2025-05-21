@@ -6,7 +6,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { 
   faTachometerAlt, faHotel, faBed, faCalendarCheck,
   faStar, faChartBar, faUsers, faBell, faSignOutAlt,
-  faHome, faSearch, faBookmark, faUser, faSignInAlt, faUserPlus
+  faHome, faBookmark, faUser, faSignInAlt, faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -30,12 +30,6 @@ import {
               </a>
             </li>
             <li>
-              <a routerLink="/search" routerLinkActive="active">
-                <fa-icon [icon]="faSearch"></fa-icon>
-                <span>Buscar Hoteles</span>
-              </a>
-            </li>
-            <li>
               <a routerLink="/auth/login" routerLinkActive="active">
                 <fa-icon [icon]="faSignInAlt"></fa-icon>
                 <span>Iniciar Sesión</span>
@@ -47,18 +41,14 @@ import {
                 <span>Registrarse</span>
               </a>
             </li>
-          </ng-container>          <!-- Menú para clientes -->
+          </ng-container>
+          
+          <!-- Menú para clientes -->
           <ng-container *ngIf="isAuthenticated && isClient">
             <li>
               <a routerLink="/client/dashboard" routerLinkActive="active">
                 <fa-icon [icon]="faTachometerAlt"></fa-icon>
                 <span>Dashboard</span>
-              </a>
-            </li>
-            <li>
-              <a routerLink="/client/search" routerLinkActive="active">
-                <fa-icon [icon]="faSearch"></fa-icon>
-                <span>Buscar Hoteles</span>
               </a>
             </li>
             <li>
@@ -266,7 +256,6 @@ export class SidebarComponent implements OnInit {
   faBell = faBell;
   faSignOutAlt = faSignOutAlt;
   faHome = faHome;
-  faSearch = faSearch;
   faBookmark = faBookmark;
   faUser = faUser;
   faSignInAlt = faSignInAlt;

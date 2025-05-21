@@ -6,9 +6,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
 import { ClientModule } from './client/client.module';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
-  declarations: [],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -16,10 +16,9 @@ import { ClientModule } from './client/client.module';
     ReactiveFormsModule,
     HttpClientModule,
     RouterModule,
-    AppComponent,
-    ClientModule
-  ],
-  providers: [],
-  bootstrap: []
+    ClientModule,
+    HomeComponent,
+    AppComponent
+  ]
 })
 export class AppModule { }

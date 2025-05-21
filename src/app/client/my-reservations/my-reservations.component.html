@@ -1,0 +1,100 @@
+<div class="reservations-container">
+  <div class="reservations-wrapper">
+    <div class="reservations-header">
+      <h1>Mis Reservas</h1>
+    </div>
+
+    <!-- Mensaje de carga -->
+    <div *ngIf="loading" class="loading-container">
+      <p>Cargando reservas...</p>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div *ngIf="error" class="error-container">
+      <p>{{error}}</p>
+      <button class="btn btn-sm btn-primary" (click)="error = null">Cerrar</button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (input)="onSearch()"
+          placeholder="Buscar por hotel o número de habitación..."
+        >
+        <fa-icon [icon]="faSearch"></fa-icon>
+      </div>
+
+      <div class="filter-controls">
+        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+          <option value="todos">Todos los estados</option>
+          <option value="confirmada">Confirmadas</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="cancelada">Canceladas</option>
+        </select>
+
+        <select [(ngModel)]="dateFilter" (change)="onDateFilterChange()">
+          <option value="todos">Todas las fechas</option>
+          <option value="hoy">Hoy</option>
+          <option value="proximas">Próximas</option>
+          <option value="pasadas">Pasadas</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Lista de Reservas -->
+    <div class="reservations-list" *ngIf="!loading && filteredReservations.length > 0">
+      <div class="reservation-card" *ngFor="let reservation of filteredReservations">
+        <div class="reservation-header">
+          <h3>
+            <fa-icon [icon]="faHotel"></fa-icon>
+            {{reservation.hotelName}}
+          </h3>
+          <span class="status-badge" [ngClass]="getStatusClass(reservation.status)">
+            {{reservation.status}}
+          </span>
+        </div>
+
+        <div class="reservation-details">
+          <div class="detail-item">
+            <fa-icon [icon]="faCalendarAlt"></fa-icon>
+            <div class="date-info">
+              <p>Check-in: {{reservation.checkIn | date}}</p>
+              <p>Check-out: {{reservation.checkOut | date}}</p>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <p>Habitación: {{reservation.roomNumber}}</p>
+          </div>
+
+          <div class="detail-item">
+            <fa-icon [icon]="faMoneyBillWave"></fa-icon>
+            <div class="payment-info">
+              <p>Total: ${{reservation.totalAmount}}</p>
+              <span class="payment-badge" [ngClass]="getPaymentStatusClass(reservation.paymentStatus)">
+                {{reservation.paymentStatus}}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="reservation-actions">
+          <button 
+            class="btn btn-danger" 
+            (click)="onCancelReservation(reservation.id)"
+            [disabled]="reservation.status === 'cancelada'">
+            Cancelar Reserva
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay reservas -->
+    <div *ngIf="!loading && filteredReservations.length === 0" class="no-reservations">
+      <p>No se encontraron reservas que coincidan con los criterios de búsqueda.</p>
+    </div>
+  </div>
+</div> 

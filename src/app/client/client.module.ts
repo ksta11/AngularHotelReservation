@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ClientRoutingModule } from './client-routing.module';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [],
@@ -11,7 +12,8 @@ import { ClientRoutingModule } from './client-routing.module';
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    ClientRoutingModule
+    ClientRoutingModule,
+    ProfileComponent
   ],
   exports: []
 })
