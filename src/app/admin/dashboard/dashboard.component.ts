@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faBed, faSignInAlt, faDollarSign, faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { faBed, faSignInAlt, faDollarSign, faChartLine, faBell } from '@fortawesome/free-solid-svg-icons';
+import { NotificationSimulatorService } from '../../services/notification-simulator.service';
 
 interface DashboardStats {
   totalRooms: number;
@@ -28,6 +29,10 @@ export class DashboardComponent implements OnInit {
   faSignInAlt = faSignInAlt;
   faDollarSign = faDollarSign;
   faChartLine = faChartLine;
+  faBell = faBell;
+
+  // Estado de la simulación de notificaciones
+  notificationsActive = false;
 
   today = new Date();
   
@@ -68,11 +73,21 @@ export class DashboardComponent implements OnInit {
       status: 'Confirmada'
     }
   ];
-
-  constructor() { }
+  constructor(private notificationSimulator: NotificationSimulatorService) { }
 
   ngOnInit(): void {
     // Aquí cargaríamos los datos reales desde el servicio
+    // Comprobar si la simulación de notificaciones ya está activa
+    this.notificationsActive = this.notificationSimulator.isSimulationActive();
+  }
+
+  toggleNotificationSimulation(): void {
+    if (this.notificationsActive) {
+      this.notificationSimulator.stopSimulation();
+    } else {
+      this.notificationSimulator.startSimulation();
+    }
+    this.notificationsActive = this.notificationSimulator.isSimulationActive();
   }
 
   getOccupancyColor(rate: number): string {

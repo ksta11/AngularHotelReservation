@@ -1,8 +1,11 @@
 <div class="dashboard-container">
   <div class="dashboard-wrapper">
-    <div class="dashboard-header">
-      <h1>Panel de Control</h1>
+    <div class="dashboard-header">      <h1>Panel de Control</h1>
       <p class="date">{{ today | date:'longDate' }}</p>
+      <button class="btn notification-simulator-btn" [class.active]="notificationsActive" (click)="toggleNotificationSimulation()">
+        <fa-icon [icon]="faBell"></fa-icon>
+        {{ notificationsActive ? 'Detener simulación de notificaciones' : 'Iniciar simulación de notificaciones' }}
+      </button>
     </div>
 
     <!-- Estadísticas Principales -->

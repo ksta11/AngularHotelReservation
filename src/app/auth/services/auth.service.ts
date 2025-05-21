@@ -10,7 +10,7 @@ import { isPlatformBrowser } from '@angular/common';
 const API_URL = 'http://localhost:3000/api';
 
 interface JwtPayload {
-  id: string;
+  sub: string;
   email: string;
   role?: 'admin' | 'client' | 'hotel_admin';
   iat: number;
@@ -39,7 +39,7 @@ export class AuthService {
           // Decodificar el token para obtener la información del usuario
           const decoded = jwtDecode<JwtPayload>(token);
           const user: User = {
-            id: decoded.id,
+            id: decoded.sub,
             email: decoded.email,
             role: decoded.role
           };
@@ -66,7 +66,7 @@ export class AuthService {
           // Decodificar el token para obtener la información del usuario
           const decoded = jwtDecode<JwtPayload>(response.accessToken);
           const user: User = {
-            id: decoded.id,
+            id: decoded.sub,
             email: decoded.email,
             role: decoded.role
           };
@@ -99,7 +99,7 @@ export class AuthService {
           // Decodificar el token para obtener la información del usuario
           const decoded = jwtDecode<JwtPayload>(response.accessToken);
           const newUser: User = {
-            id: decoded.id,
+            id: decoded.sub,
             email: decoded.email,
             role: decoded.role
           };

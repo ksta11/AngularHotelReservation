@@ -2,17 +2,19 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
 
-@Component({
-  selector: 'app-admin-layout',
+@Component({  selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, SidebarComponent],
+  imports: [CommonModule, RouterModule, SidebarComponent, NotificationBellComponent],
   template: `
     <div class="admin-layout">
-      <app-sidebar></app-sidebar>
-      <div class="content-area">
+      <app-sidebar></app-sidebar>      <div class="content-area">
         <header class="content-header">
           <h1>Sistema de Administración Hotelera</h1>
+          <div class="header-actions">
+            <app-notification-bell></app-notification-bell>
+          </div>
         </header>
         <main class="content-main">
           <router-outlet></router-outlet>
@@ -35,18 +37,26 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
       display: flex;
       flex-direction: column;
     }
-    
-    .content-header {
+      .content-header {
       padding: 1rem 2rem;
       background-color: #fff;
       border-bottom: 1px solid #dee2e6;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       
       h1 {
         margin: 0;
         font-size: 1.5rem;
         font-weight: 600;
         color: #495057;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
       }
     }
     

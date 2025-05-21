@@ -5,7 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { ReservationService } from '../../../services/reservation.service';
 import { HotelService } from '../../../services/hotel.service';
-import { PaymentStatus } from '../../../models/reservation.model';
+import { PaymentStatus, ReservationStatus } from '../../../models/reservation.model';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -22,25 +22,24 @@ import { finalize } from 'rxjs';
 export class NewReservationComponent implements OnInit {
   reservationForm: FormGroup;
   loading = false;
-  error: string | null = null;
-  paymentStatusOptions = [
+  error: string | null = null;  paymentStatusOptions = [
     { value: PaymentStatus.PENDING, label: 'Pendiente' },
-    { value: PaymentStatus.PAID, label: 'Pagado' }
+    { value: PaymentStatus.PAID, label: 'Pagado' },
+    { value: PaymentStatus.REFUNDED, label: 'Reembolsado' }
   ];
 
   constructor(
     private fb: FormBuilder, 
     private reservationService: ReservationService, 
     private hotelService: HotelService,
-    private router: Router
-  ) {    this.reservationForm = this.fb.group({
+    private router: Router  ) {    this.reservationForm = this.fb.group({
       userEmail: ['', [Validators.required, Validators.email]],
       roomNumber: ['', Validators.required],
       checkInDate: ['', Validators.required],
       checkOutDate: ['', Validators.required],
       totalPrice: ['', [Validators.required, Validators.min(0)]],
       specialRequests: [''],
-      paymentStatus: ['pending', Validators.required]
+      paymentStatus: [PaymentStatus.PENDING, Validators.required]
     });
   }
   hotelId: string | null = null;
@@ -51,14 +50,13 @@ export class NewReservationComponent implements OnInit {
       this.error = 'No se ha encontrado un hotel asociado a tu cuenta';
     }
   }
-
   onSubmit(): void {
     if (this.reservationForm.valid && this.hotelId) {
       this.loading = true;
-      // Siempre establecemos el status como 'confirmed'
+      // Siempre establecemos el status como 'confirmed' según los nuevos estados
       const reservationData = {
         ...this.reservationForm.value,
-        status: 'confirmed'
+        status: ReservationStatus.CONFIRMED
       };
 
       this.reservationService.createReservation(this.hotelId, reservationData)

@@ -7,13 +7,17 @@
     "types": [
       "node"
     ]
-  },
-  "files": [
+  },  "files": [
     "src/main.ts",
     "src/main.server.ts",
     "src/server.ts"
   ],
   "include": [
     "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "**/node_modules/**",
+    "**/*.spec.ts",
+    "C:/Projects/nest-hotel-reservation/**/*"
   ]
 }

@@ -16,15 +16,13 @@
           (ngModelChange)="filterNotifications()"
           placeholder="Buscar notificaciones...">
         <fa-icon [icon]="faBell"></fa-icon>
-      </div>
-
-      <div class="filter-controls">
+      </div>      <div class="filter-controls">
         <select [(ngModel)]="selectedFilter" (ngModelChange)="filterNotifications()">
           <option value="all">Todas</option>
-          <option value="reservation">Reservas</option>
-          <option value="review">Reseñas</option>
-          <option value="maintenance">Mantenimiento</option>
-          <option value="system">Sistema</option>
+          <option value="info">Informativas</option>
+          <option value="success">Exitosas</option>
+          <option value="warning">Alertas</option>
+          <option value="error">Errores</option>
         </select>
       </div>
     </div>
@@ -32,18 +30,14 @@
     <div class="notifications-list">
       <div *ngIf="filteredNotifications.length === 0" class="no-notifications">
         No hay notificaciones para mostrar
-      </div>
-
-      <div *ngFor="let notification of filteredNotifications" 
+      </div>      <div *ngFor="let notification of filteredNotifications" 
            class="notification-item"
            [class.unread]="!notification.read"
-           [class.priority-high]="notification.priority === 'high'"
-           [class.priority-medium]="notification.priority === 'medium'"
-           [class.priority-low]="notification.priority === 'low'">
+           [ngClass]="getTypeClass(notification.type)">
         
         <div class="notification-content">
           <div class="notification-header">
-            <h3>{{ notification.title }}</h3>
+            <h3>Notificación</h3>
             <span class="notification-time">
               {{ notification.timestamp | date:'short' }}
             </span>

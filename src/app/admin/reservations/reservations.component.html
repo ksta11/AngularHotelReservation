@@ -30,12 +30,13 @@
         <fa-icon [icon]="faSearch"></fa-icon>
       </div>
 
-      <div class="filter-controls">
-        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+      <div class="filter-controls">        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
           <option value="todos">Todos los estados</option>
-          <option value="confirmada">Confirmadas</option>
-          <option value="pendiente">Pendientes</option>
-          <option value="cancelada">Canceladas</option>
+          <option value="confirmed">Confirmadas</option>
+          <option value="pending">Pendientes</option>
+          <option value="checked-in">Check-in realizado</option>
+          <option value="checked-out">Check-out realizado</option>
+          <option value="cancelled">Canceladas</option>
         </select>
 
         <select [(ngModel)]="dateFilter" (change)="onDateFilterChange()">
@@ -62,29 +63,51 @@
         </thead>
         <tbody>          <tr *ngFor="let reservation of filteredReservations">            <td>
               <div class="guest-info">
-                <span>{{reservation.email}}</span>
+                <strong *ngIf="reservation.guestName">{{reservation.guestName}}</strong>
+                <span>{{reservation.email || 'Sin email'}}</span>
               </div>
             </td>
             <td>
               <div class="room-info">
-                <strong>{{reservation.roomNumber}}</strong>
+                <strong>{{reservation.roomNumber || 'N/A'}}</strong>
+                <small *ngIf="reservation.roomType">({{reservation.roomType}})</small>
               </div>
             </td>
-            <td>{{reservation.checkIn | date}}</td>
-            <td>{{reservation.checkOut | date}}</td>
-            <td>
+            <td>{{(reservation.checkInDate || reservation.checkIn) ? ((reservation.checkInDate || reservation.checkIn) | date) : 'No especificado'}}</td>
+            <td>{{(reservation.checkOutDate || reservation.checkOut) ? ((reservation.checkOutDate || reservation.checkOut) | date) : 'No especificado'}}</td>            <td>
               <span class="status-badge" [ngClass]="getStatusClass(reservation.status)">
-                {{reservation.status}}
+                {{getStatusLabel(reservation.status) || 'No definido'}}
               </span>
             </td>
             <td>
               <span class="payment-badge" [ngClass]="getPaymentStatusClass(reservation.paymentStatus)">
-                {{reservation.paymentStatus}}
+                {{getPaymentStatusLabel(reservation.paymentStatus) || 'No definido'}}
               </span>
             </td>
-            <td>${{reservation.totalAmount | number}}</td>
-            <td>
-              <div class="action-buttons">
+            <td>${{(reservation.totalPrice || reservation.totalAmount || 0) | number}}</td>            <td>
+              <div class="action-buttons">                <!-- Dropdown para cambios de estado -->
+                <div class="dropdown action-dropdown" *ngIf="getAvailableStatusChanges(reservation.status).length > 0">
+                  <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button">
+                    <fa-icon [icon]="faListCheck"></fa-icon> Estado ↑
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li *ngFor="let status of getAvailableStatusChanges(reservation.status)">
+                      <a class="dropdown-item" href="#" (click)="$event.preventDefault(); updateReservationStatus(reservation, status.value)">
+                        {{status.label}}
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                
+                <!-- Botón para marcar como pagado (solo si el pago está pendiente) -->
+                <button *ngIf="reservation.paymentStatus === 'pending'" 
+                        class="btn btn-sm btn-success" 
+                        title="Marcar como pagado"
+                        (click)="markReservationAsPaid(reservation)">
+                  <fa-icon [icon]="faMoneyBillWave"></fa-icon> Pagar
+                </button>
+                
+                <!-- Botones estándar -->
                 <button class="btn btn-icon" title="Editar">
                   <fa-icon [icon]="faEdit"></fa-icon>
                 </button>
@@ -99,8 +122,13 @@
     </div>
 
     <!-- Mensaje sin reservas -->
-    <div *ngIf="!loading && filteredReservations.length === 0" class="no-data">
-      <p>No hay reservas que coincidan con los filtros seleccionados.</p>
+    <div *ngIf="!loading && filteredReservations && filteredReservations.length === 0" class="no-data">
+      <p *ngIf="searchTerm || statusFilter !== 'todos' || dateFilter !== 'todos'">
+        No hay reservas que coincidan con los filtros seleccionados.
+      </p>
+      <p *ngIf="!searchTerm && statusFilter === 'todos' && dateFilter === 'todos'">
+        No hay reservas registradas actualmente. Utiliza el botón "Nueva Reserva" para crear una.
+      </p>
     </div>
   </div>
 </div>

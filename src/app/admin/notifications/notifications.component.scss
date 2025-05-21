@@ -112,22 +112,25 @@
   padding: 1rem;
   border: 1px solid #dee2e6;
   transition: all 0.2s ease;
-
   &.unread {
     background-color: #f8f9fa;
     border-left: 4px solid #5f8cec;
   }
 
-  &.priority-high {
-    border-left: 4px solid #dc3545;
+  &.notification-info {
+    border-left: 4px solid #3498db;
   }
 
-  &.priority-medium {
+  &.notification-success {
+    border-left: 4px solid #28a745;
+  }
+
+  &.notification-warning {
     border-left: 4px solid #ffc107;
   }
 
-  &.priority-low {
-    border-left: 4px solid #28a745;
+  &.notification-error {
+    border-left: 4px solid #dc3545;
   }
 
   &:hover {

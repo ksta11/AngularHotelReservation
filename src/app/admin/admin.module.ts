@@ -18,16 +18,7 @@ import { UserEditComponent } from './users/user-edit/user-edit.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    AdminRoutingModule,
-    HotelInfoComponent,
-    DashboardComponent,
-    RoomManagementComponent,
-    ReservationsComponent,
-    NotificationsComponent,
-    ReviewsComponent,
-    ReportsComponent,
-    UsersComponent,
-    UserEditComponent
+    AdminRoutingModule
   ]
 })
 export class AdminModule { }

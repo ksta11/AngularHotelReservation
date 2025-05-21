@@ -156,6 +156,14 @@
   &.status-cancelled {
     background-color: #dc3545;
   }
+  
+  &.status-checked-in {
+    background-color: #007bff;
+  }
+  
+  &.status-checked-out {
+    background-color: #6c757d;
+  }
 }
 
 .payment-badge {
@@ -167,15 +175,96 @@
     background-color: #dc3545;
   }
 
-  &.payment-partial {
-    background-color: #ffc107;
-    color: #212529;
+  &.payment-refunded {
+    background-color: #6c757d;
   }
 }
 
 .action-buttons {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  
+  .action-dropdown {
+    position: relative;
+    display: inline-block;      .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color: white;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+      border-radius: 0.25rem;
+      padding: 0.5rem 0;
+      list-style: none;
+      bottom: 100%; // Coloca el menú por encima del botón en lugar de debajo
+      margin-bottom: 0.5rem; // Espacio entre el menú y el botón
+      left: 50%; // Centrar horizontalmente
+      transform: translateX(-50%); // Asegurar que esté centrado
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 8px;
+        border-style: solid;
+        border-color: white transparent transparent transparent;
+      }
+      
+      a {
+        color: #212529;
+        padding: 0.5rem 1rem;
+        text-decoration: none;
+        display: block;
+        
+        &:hover {
+          background-color: #f8f9fa;
+        }
+      }
+    }
+      &:hover .dropdown-menu {
+      display: block;
+      animation: fadeInUp 0.2s ease-out forwards;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translate(-50%, 10px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+  }
+
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .btn-outline-primary {
+    background-color: transparent;
+    border: 1px solid #5f8cec;
+    color: #5f8cec;
+    
+    &:hover {
+      background-color: #5f8cec;
+      color: white;
+    }
+  }
+  
+  .btn-success {
+    background-color: #28a745;
+    color: white;
+    
+    &:hover {
+      background-color: #218838;
+    }
+  }
 }
 
 .btn {
@@ -244,9 +333,8 @@
     padding: 0.25rem 0.75rem;
     border-radius: 0.25rem;
     cursor: pointer;
-    
-    &:hover {
-      background-color: darken(#721c24, 10%);
+      &:hover {
+      background-color: #5a161c; /* Equivalente a darken(#721c24, 10%) */
     }
   }
 }
@@ -258,4 +346,34 @@
   background-color: #f8f9fa;
   border-radius: 0.5rem;
   margin-top: 1rem;
+}
+
+// Notificaciones temporales
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 4px;
+  color: white;
+  font-weight: 500;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 300px;
+
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &.success {
+    background-color: #28a745;
+  }
+
+  &.error {
+    background-color: #dc3545;
+  }
 }
