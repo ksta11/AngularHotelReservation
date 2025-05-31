@@ -18,7 +18,8 @@
       <div class="room-management-content">
         <form [formGroup]="roomForm" (ngSubmit)="onSubmit()" class="room-form">
           <div class="form-row">
-            <div class="form-field">              <label for="roomNumber">Número de Habitación</label>
+            <div class="form-field">
+              <label for="roomNumber">Número de Habitación</label>
               <input 
                 type="text" 
                 id="roomNumber" 
@@ -31,7 +32,8 @@
               </div>
             </div>
 
-            <div class="form-field">              <label for="roomType">Tipo de Habitación</label>
+            <div class="form-field">
+              <label for="roomType">Tipo de Habitación</label>
               <select 
                 id="roomType" 
                 formControlName="roomType"
@@ -90,6 +92,25 @@
             <div class="invalid-feedback" *ngIf="roomForm.get('description')?.invalid && roomForm.get('description')?.touched">
               La descripción es requerida
             </div>
+          </div>          <!-- Imagen de la Habitación -->
+          <div class="form-field">
+            <label>Imagen de la Habitación</label>
+            <div class="image-upload-container">
+              <div class="image-upload-button" *ngIf="!imagePreview">
+                <input type="file" #roomImageInput id="roomImage" accept="image/*" (change)="onImageSelected($event)" style="display: none;">
+                <button type="button" class="btn-outline" (click)="roomImageInput.click()">
+                  <i class="fa fa-upload"></i> Subir imagen
+                </button>
+                <span class="upload-hint">Recomendado: imagen de alta calidad en formato 16:9</span>
+              </div>
+              
+              <div class="image-preview-container" *ngIf="imagePreview">
+                <img [src]="imagePreview" alt="Vista previa de la habitación" class="image-preview">
+                <button type="button" class="btn-remove-image" (click)="removeImage()">
+                  <i class="fa fa-times"></i> Eliminar
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="form-field">
@@ -102,7 +123,8 @@
             >
           </div>
 
-          <div class="form-field">            <label for="state">Estado</label>
+          <div class="form-field">
+            <label for="state">Estado</label>
             <select 
               id="state" 
               formControlName="state"
@@ -138,6 +160,7 @@
             <table class="table">
               <thead>
                 <tr>
+                  <th>Imagen</th>
                   <th>Número</th>
                   <th>Tipo</th>
                   <th>Capacidad</th>
@@ -146,7 +169,12 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody>                <tr *ngFor="let room of rooms">
+              <tbody>
+                <tr *ngFor="let room of rooms">
+                  <td>
+                    <img *ngIf="room.imageUrl" [src]="room.imageUrl" class="room-image-thumbnail" alt="Imagen de habitación">
+                    <span *ngIf="!room.imageUrl" class="no-image">Sin imagen</span>
+                  </td>
                   <td>{{room.roomNumber}}</td>
                   <td>{{room.roomType}}</td>
                   <td>{{room.capacity}}</td>
@@ -160,7 +188,8 @@
                     }">
                       {{room.state}}
                     </span>
-                  </td>                  <td>
+                  </td>
+                  <td>
                     <button class="btn btn-sm btn-primary" (click)="editRoom(room)">Editar</button>
                     <button class="btn btn-sm btn-danger" (click)="deleteRoom(room.id!)">Eliminar</button>
                   </td>

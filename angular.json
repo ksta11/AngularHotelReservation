@@ -15,8 +15,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
-          "options": {
+          "builder": "@angular-devkit/build-angular:application",          "options": {
             "outputPath": "dist/angular-hotel-reservation",
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -34,6 +33,11 @@
             "styles": [
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/app/shared/styles"
+              ]
+            },
             "scripts": [],
             "server": "src/main.server.ts",
             "outputMode": "server",

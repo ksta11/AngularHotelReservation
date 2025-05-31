@@ -1,24 +1,19 @@
 export interface Room {
-    id?: string;
+    id: string;
     roomNumber: string;
     roomType: RoomType | string;
     description: string | null;
     capacity: number;
     price: number;
-    amenities: string | string[];
-    specialPrice?: number;
-    specialPriceStartDate?: string;
-    specialPriceEndDate?: string;
+    amenities: string[];
     state: RoomStatus | string;
-    createdAt?: string;
-    updatedAt?: string;
-    hotel?: {
+    imageUrl: string | null;
+    hotel: {
         id: string;
         name: string;
-        address: string;
-        category: number;
     };
-    images?: string[];
+    createdAt: string;
+    updatedAt: string;
 }
 
 export enum RoomType {
@@ -31,8 +26,8 @@ export enum RoomType {
 }
 
 export enum RoomStatus {
-    AVAILABLE = 'available',
-    OCCUPIED = 'occupied',
-    MAINTENANCE = 'maintenance',
-    RESERVED = 'reserved'
+    AVAILABLE = 'AVAILABLE',
+    OCCUPIED = 'OCCUPIED',
+    MAINTENANCE = 'MAINTENANCE',
+    RESERVED = 'RESERVED'
 }

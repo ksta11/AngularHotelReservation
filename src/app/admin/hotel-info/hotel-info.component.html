@@ -24,6 +24,11 @@
       
       <!-- Vista de información del hotel -->
       <div *ngIf="!loading && hotel && !isEditMode" class="hotel-info-content">
+        <!-- Imagen del hotel -->
+        <div class="hotel-image-section" *ngIf="hotel.imageUrl">
+          <img [src]="hotel.imageUrl" alt="{{ hotel.name }}" class="hotel-main-image">
+        </div>
+        
         <div class="info-section">
           <h3>Información Básica</h3>
           <div class="info-row">
@@ -105,6 +110,27 @@
               <div class="error-message" *ngIf="hotelForm.get('description')?.invalid && (hotelForm.get('description')?.dirty || hotelForm.get('description')?.touched)">
                 <span *ngIf="hotelForm.get('description')?.errors?.['required']">La descripción es obligatoria.</span>
                 <span *ngIf="hotelForm.get('description')?.errors?.['minlength']">La descripción debe tener al menos 10 caracteres.</span>
+              </div>
+            </div>
+            
+            <!-- Imagen del Hotel -->
+            <div class="form-field">
+              <label>Imagen del Hotel</label>
+              <div class="image-upload-container">
+                <div class="image-upload-button" *ngIf="!imagePreview">
+                  <input type="file" #hotelImageInput accept="image/*" (change)="onImageSelected($event)" style="display: none;">
+                  <button type="button" class="btn-outline" (click)="hotelImageInput.click()">
+                    <i class="fa fa-upload"></i> Subir imagen
+                  </button>
+                  <span class="upload-hint">Recomendado: imagen en formato 16:9</span>
+                </div>
+                
+                <div class="image-preview-container" *ngIf="imagePreview">
+                  <img [src]="imagePreview" alt="Vista previa del hotel" class="image-preview">
+                  <button type="button" class="btn-remove-image" (click)="removeImage()">
+                    <i class="fa fa-times"></i> Eliminar
+                  </button>
+                </div>
               </div>
             </div>
           </div>

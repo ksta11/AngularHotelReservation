@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Hotel } from '../../models/hotel.model';
 import { AuthService } from '../../auth/services/auth.service';
 import { HotelService } from '../../services/hotel.service';
+import { CloudinaryService } from '../../services/cloudinary.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -20,6 +21,10 @@ export class HotelInfoComponent implements OnInit {
   hotelForm: FormGroup;
   isEditMode: boolean = false;
   
+  // Variables para gestionar la imagen
+  selectedImage: File | null = null;
+  imagePreview: string | null = null;
+  
   amenities: string[] = [
     'WiFi Gratuito',
     'Piscina',
@@ -35,6 +40,7 @@ export class HotelInfoComponent implements OnInit {
     private fb: FormBuilder, 
     private authService: AuthService,
     private hotelService: HotelService,
+    private cloudinaryService: CloudinaryService,
     private router: Router
   ) {
     // Inicializar el formulario vacío para edición posterior
@@ -78,6 +84,11 @@ export class HotelInfoComponent implements OnInit {
         this.hotel = hotel;
         this.loading = false;
         
+        // Si el hotel tiene una imagen, mostrarla en la vista previa
+        if (hotel.imageUrl) {
+          this.imagePreview = hotel.imageUrl;
+        }
+        
         // Si tenemos datos del hotel, pre-llenamos el formulario para una posible edición
         if (hotel) {
           this.hotelForm.patchValue({
@@ -112,6 +123,8 @@ export class HotelInfoComponent implements OnInit {
   }
     onSubmit(): void {
     if (this.hotelForm.valid && this.hotel?.id) {
+      this.loading = true;
+      
       // Obtener el usuario actual con el email y userId desde el servicio de autenticación
       const currentUser = this.authService.getCurrentUser();
       const email = currentUser?.email || '';
@@ -119,44 +132,85 @@ export class HotelInfoComponent implements OnInit {
       
       if (!userId) {
         console.error('No se pudo obtener el ID del usuario desde el token');
-        alert('Error: No se pudo identificar al usuario. Intente iniciar sesión nuevamente.');
+        this.error = 'No se pudo identificar al usuario. Intente iniciar sesión nuevamente.';
+        this.loading = false;
         return;
       }
       
-      // Formatear los datos del formulario
+      // Crear objeto final con los datos del formulario
       const formValue = this.hotelForm.value;
-      const hotelData: Partial<Hotel> = {
-        name: formValue.name,
-        address: formValue.address.street,
-        description: formValue.description,
-        city: formValue.address.city,
-        country: formValue.address.country,
-        postalCode: formValue.address.zipCode,
-        phone: formValue.contactInfo.phone,
-        email: email,
-        checkInTime: formValue.policies.checkInTime,
-        checkOutTime: formValue.policies.checkOutTime,
-        cancellationPolicy: formValue.policies.cancellationPolicy,
-        userId: userId
-      };
-      
-      // Actualizar el hotel existente en lugar de crear uno nuevo
-      this.hotelService.updateHotel(this.hotel.id, hotelData).subscribe({
-        next: (response) => {
-          console.log('Hotel actualizado correctamente:', response);
-          this.hotel = response;
-          this.isEditMode = false;
-          alert('¡Información del hotel actualizada correctamente!');
-        },
-        error: (error: any) => {
-          console.error('Error al actualizar el hotel:', error);
-          alert('Error al actualizar el hotel: ' + error);
-        }      });
+        // Si hay una imagen seleccionada, primero subir la imagen
+      if (this.selectedImage) {
+        this.cloudinaryService.uploadImage(this.selectedImage, 'hotels', this.hotel.id).subscribe({
+          next: (response) => {
+            if (response && response.imageUrl) {
+              console.log('Imagen subida correctamente:', response);
+              this.updateHotel(formValue, email, userId, response.imageUrl);
+            } else {
+              console.error('Error: No se recibió la URL de la imagen');
+              alert('Error: No se pudo subir la imagen. Se mantendrá la imagen actual.');
+              this.updateHotel(formValue, email, userId, this.hotel?.imageUrl);
+              this.loading = false;
+            }
+          },
+          error: (error) => {
+            console.error('Error al subir la imagen:', error);
+            alert('Error al subir la imagen. Se mantendrá la imagen actual.');
+            // Continuar con la actualización del hotel sin cambiar la imagen
+            this.updateHotel(formValue, email, userId, this.hotel?.imageUrl);
+            this.loading = false;
+          }
+        });
+      } else {
+        // Actualizar el hotel sin cambiar la imagen
+        this.updateHotel(formValue, email, userId, this.hotel?.imageUrl);
+      }
     } else {
       // Marcar todos los campos como tocados para mostrar los errores de validación
       this.markFormGroupTouched(this.hotelForm);
       alert('Por favor, complete todos los campos requeridos correctamente.');
     }
+  }
+  
+  private updateHotel(formValue: any, email: string, userId: string, imageUrl?: string): void {
+    if (!this.hotel?.id) return;
+    
+    // Formatear los datos según la estructura esperada por la API
+    const hotelData: Partial<Hotel> = {
+      name: formValue.name,
+      address: formValue.address.street,
+      description: formValue.description,
+      city: formValue.address.city,
+      country: formValue.address.country,
+      postalCode: formValue.address.zipCode,
+      phone: formValue.contactInfo.phone,
+      email: email,
+      checkInTime: formValue.policies.checkInTime,
+      checkOutTime: formValue.policies.checkOutTime,
+      cancellationPolicy: formValue.policies.cancellationPolicy,
+      userId: userId
+    };
+    
+    // Añadir la URL de la imagen si existe
+    if (imageUrl) {
+      hotelData.imageUrl = imageUrl;
+    }
+    
+    // Actualizar el hotel existente en lugar de crear uno nuevo
+    this.hotelService.updateHotel(this.hotel.id, hotelData).subscribe({
+      next: (response) => {
+        console.log('Hotel actualizado correctamente:', response);
+        this.hotel = response;
+        this.isEditMode = false;
+        this.loading = false;
+        alert('¡Información del hotel actualizada correctamente!');
+      },
+      error: (error: any) => {
+        console.error('Error al actualizar el hotel:', error);
+        this.loading = false;
+        alert('Error al actualizar el hotel: ' + error);
+      }
+    });
   }
   
   // Función auxiliar para marcar todos los campos del formulario como tocados
@@ -169,5 +223,26 @@ export class HotelInfoComponent implements OnInit {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  onImageSelected(event: Event): void {
+    const fileInput = event.target as HTMLInputElement;
+    
+    if (fileInput.files && fileInput.files.length > 0) {
+      this.selectedImage = fileInput.files[0];
+      
+      // Crear una vista previa de la imagen
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result as string;
+      };
+      reader.readAsDataURL(this.selectedImage);
+    }
+  }
+
+  removeImage(): void {
+    this.selectedImage = null;
+    // Si estamos editando y ya había una imagen, mantener la original
+    this.imagePreview = this.hotel?.imageUrl || null;
   }
 }

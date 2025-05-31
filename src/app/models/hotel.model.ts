@@ -13,6 +13,7 @@ export interface Hotel {
   checkInTime: string;
   checkOutTime: string;
   cancellationPolicy: string;
+  imageUrl?: string;      // URL de imagen principal del hotel en Cloudinary
   averageRating?: number;  // Cambiado de 'rating' a 'averageRating' según estructura de respuesta
   rooms?: any[];           // Añadido según estructura de respuesta
   amenities?: string[];

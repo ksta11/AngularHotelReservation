@@ -1,7 +1,17 @@
-<div class="reports-container">
-  <div class="reports-header">
+<div class="reports-container">  <div class="reports-header">
     <h1>Reportes</h1>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <fa-icon [icon]="faPlus"></fa-icon> Crear Reporte
+    </button>
   </div>
+  
+  <!-- Modal para crear reportes -->
+  <app-create-report-modal
+    [hotelId]="hotelId"
+    [showModal]="showCreateModal"
+    (close)="closeCreateModal()"
+    (reportCreated)="handleReportCreated($event)"
+  ></app-create-report-modal>
 
   <div class="reports-filters">
     <div class="search-box">
@@ -39,9 +49,21 @@
       </select>
     </div>
   </div>
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="error-message">
+    <fa-icon [icon]="faWarning"></fa-icon>
+    <p>{{ error }}</p>
+    <button (click)="loadReports()">Reintentar</button>
+  </div>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando reportes...</p>
+  </div>
 
   <div class="reports-grid">
-    <div *ngIf="filteredReports.length === 0" class="no-reports">
+    <div *ngIf="!loading && !error && filteredReports.length === 0" class="no-reports">
       <fa-icon [icon]="faChartBar"></fa-icon>
       <p>No hay reportes que coincidan con los filtros</p>
     </div>
@@ -119,10 +141,47 @@
             <div class="data-item">
               <span class="label">5 Estrellas</span>
               <span class="value">{{ formatNumber(report.data.ratingDistribution.five) }}</span>
-            </div>
-            <div class="data-item">
+            </div>            <div class="data-item">
               <span class="label">4 Estrellas</span>
               <span class="value">{{ formatNumber(report.data.ratingDistribution.four) }}</span>
+            </div>
+          </div>          <!-- Reporte de Reservas - Compatible con ambos tipos "bookings" y "reservation" -->
+          <div *ngSwitchCase="'bookings'" class="report-data">
+            <div class="data-item">
+              <span class="label">Total Reservas</span>
+              <span class="value">{{ formatNumber(report.data.totalBookings) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Nuevas Reservas</span>
+              <span class="value">{{ formatNumber(report.data.newBookings) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Cancelaciones</span>
+              <span class="value">{{ formatNumber(report.data.cancellations) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Tasa de Conversión</span>
+              <span class="value">{{ report.data.conversionRate }}%</span>
+            </div>
+          </div>
+          
+          <!-- Reporte de Reservas (API) -->
+          <div *ngSwitchCase="'reservation'" class="report-data">
+            <div class="data-item">
+              <span class="label">Total Reservas</span>
+              <span class="value">{{ formatNumber(report.data.totalBookings) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Reservas Confirmadas</span>
+              <span class="value">{{ formatNumber(report.data.newBookings) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Reservas Canceladas</span>
+              <span class="value">{{ formatNumber(report.data.cancellations) }}</span>
+            </div>
+            <div class="data-item">
+              <span class="label">Tasa de Conversión</span>
+              <span class="value">{{ report.data.conversionRate }}%</span>
             </div>
           </div>
         </ng-container>

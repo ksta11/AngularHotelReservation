@@ -38,6 +38,26 @@
                 <span *ngIf="hotelForm.get('description')?.errors?.['minlength']">La descripción debe tener al menos 10 caracteres.</span>
               </div>
             </div>
+            
+            <!-- Imagen del Hotel -->
+            <div class="form-field">
+              <label for="hotelImage">Imagen del Hotel</label>
+              <div class="image-upload-container">                <div class="image-upload-button" *ngIf="!imagePreview">
+                  <input type="file" id="hotelImage" accept="image/*" (change)="onImageSelected($event)" style="display: none;">
+                  <button type="button" class="btn-outline" (click)="openFileSelector()">
+                    <i class="fa fa-upload"></i> Subir imagen
+                  </button>
+                  <span class="upload-hint">Recomendado: imagen del hotel de 1200x800px o similar</span>
+                </div>
+                
+                <div class="image-preview-container" *ngIf="imagePreview">
+                  <img [src]="imagePreview" alt="Vista previa del hotel" class="image-preview">
+                  <button type="button" class="btn-remove-image" (click)="removeImage()">
+                    <i class="fa fa-times"></i> Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Ubicación -->

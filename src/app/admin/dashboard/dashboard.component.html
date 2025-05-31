@@ -84,49 +84,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Reservas Recientes -->
-    <div class="recent-reservations">
-      <div class="section-header">
-        <h2>Reservas Recientes</h2>
-        <button class="btn btn-primary">Ver Todas</button>
-      </div>
-      
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Huésped</th>
-              <th>Habitación</th>
-              <th>Check-in</th>
-              <th>Check-out</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let reservation of recentReservations">
-              <td>{{reservation.guestName}}</td>
-              <td>{{reservation.roomNumber}}</td>
-              <td>{{reservation.checkIn | date}}</td>
-              <td>{{reservation.checkOut | date}}</td>
-              <td>
-                <span class="badge" [ngClass]="{
-                  'badge-success': reservation.status === 'Confirmada',
-                  'badge-warning': reservation.status === 'Pendiente'
-                }">
-                  {{reservation.status}}
-                </span>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-primary">Ver Detalles</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+      </div>    </div>
   </div>
 </div>

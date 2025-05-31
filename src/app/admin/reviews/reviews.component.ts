@@ -1,20 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faStar, faSearch, faReply, faTrash, faFilter } from '@fortawesome/free-solid-svg-icons';
-
-interface Review {
-  id: number;
-  guestName: string;
-  roomNumber: string;
-  rating: number;
-  comment: string;
-  date: Date;
-  status: 'pending' | 'approved' | 'rejected';
-  response?: string;
-}
+import { faStar, faSearch, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { Review } from '../../models/review.model';
+import { ReviewService } from '../../services/review.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reviews',
@@ -23,100 +15,100 @@ interface Review {
   templateUrl: './reviews.component.html',
   styleUrls: ['./reviews.component.scss']
 })
-export class ReviewsComponent implements OnInit {
+export class ReviewsComponent implements OnInit, OnDestroy {
   reviews: Review[] = [];
   filteredReviews: Review[] = [];
-  selectedFilter: string = 'all';
   searchTerm: string = '';
   selectedRating: number = 0;
+  isLoading: boolean = false;
+  error: string | null = null;
+  isSubmitting: boolean = false;
 
   // Icons
   faStar = faStar;
   faSearch = faSearch;
-  faReply = faReply;
-  faTrash = faTrash;
-  faFilter = faFilter;
+  faSpinner = faSpinner;
 
-  constructor() {}
+  private subscription = new Subscription();
+
+  constructor(private reviewService: ReviewService) {}
 
   ngOnInit(): void {
-    // Simulación de datos - En producción esto vendría de un servicio
-    this.reviews = [
-      {
-        id: 1,
-        guestName: 'Juan Pérez',
-        roomNumber: '101',
-        rating: 5,
-        comment: 'Excelente servicio y habitación muy cómoda. Volveré pronto.',
-        date: new Date(),
-        status: 'approved',
-        response: '¡Gracias por su excelente reseña! Esperamos verlo pronto.'
-      },
-      {
-        id: 2,
-        guestName: 'María García',
-        roomNumber: '203',
-        rating: 4,
-        comment: 'Muy buena estancia, solo faltó un poco más de limpieza en el baño.',
-        date: new Date(Date.now() - 86400000),
-        status: 'pending'
-      },
-      {
-        id: 3,
-        guestName: 'Carlos López',
-        roomNumber: '305',
-        rating: 2,
-        comment: 'El servicio fue muy lento y la habitación no estaba lista a la hora acordada.',
-        date: new Date(Date.now() - 172800000),
-        status: 'rejected',
-        response: 'Lamentamos mucho su experiencia. Hemos tomado medidas para mejorar nuestro servicio.'
-      }
-    ];
-    this.filteredReviews = [...this.reviews];
+    this.loadReviews();
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  loadReviews(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    this.subscription.add(
+      this.reviewService.getHotelReviews().subscribe({
+        next: (reviews) => {
+          this.reviews = reviews;
+          this.filterReviews();
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error al cargar las reseñas:', error);
+          this.error = error?.message || 'No se pudieron cargar las reseñas. Por favor, inténtalo de nuevo más tarde.';
+          this.isLoading = false;
+        }
+      })
+    );
   }
 
   filterReviews(): void {
     this.filteredReviews = this.reviews.filter(review => {
-      const matchesFilter = this.selectedFilter === 'all' || 
-                          review.status === this.selectedFilter;
       const matchesSearch = !this.searchTerm || 
-                          review.guestName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
                           review.comment.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchesRating = this.selectedRating === 0 || 
                           review.rating === this.selectedRating;
-      return matchesFilter && matchesSearch && matchesRating;
+      return matchesSearch && matchesRating;
     });
   }
 
-  approveReview(review: Review): void {
-    review.status = 'approved';
-  }
-
-  rejectReview(review: Review): void {
-    review.status = 'rejected';
-  }
-
-  deleteReview(review: Review): void {
-    if (confirm('¿Estás seguro de que deseas eliminar esta reseña?')) {
-      this.reviews = this.reviews.filter(r => r.id !== review.id);
-      this.filterReviews();
+  respondToReview(review: Review, response: string): void {
+    if (!response.trim()) {
+      alert('La respuesta no puede estar vacía');
+      return;
     }
-  }
 
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'approved':
-        return 'status-approved';
-      case 'pending':
-        return 'status-pending';
-      case 'rejected':
-        return 'status-rejected';
-      default:
-        return '';
-    }
+    this.isSubmitting = true;
+    
+    this.subscription.add(
+      this.reviewService.respondToReview(review.id, response).subscribe({
+        next: (updatedReview) => {
+          const index = this.reviews.findIndex(r => r.id === updatedReview.id);
+          if (index !== -1) {
+            this.reviews[index] = updatedReview;
+            this.filterReviews();
+          }
+          this.isSubmitting = false;
+        },
+        error: (error) => {
+          console.error('Error al responder la reseña:', error);
+          alert(error?.message || 'No se pudo guardar la respuesta. Por favor, inténtalo de nuevo.');
+          this.isSubmitting = false;
+        }
+      })
+    );
   }
 
   getStars(rating: number): number[] {
     return Array(5).fill(0).map((_, index) => index < rating ? 1 : 0);
+  }
+
+  formatDate(date: string): string {
+    return new Date(date).toLocaleString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }

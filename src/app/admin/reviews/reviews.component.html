@@ -10,19 +10,13 @@
           type="text" 
           [(ngModel)]="searchTerm" 
           (ngModelChange)="filterReviews()"
-          placeholder="Buscar reseñas...">
+          placeholder="Buscar reseñas..."
+          [disabled]="isLoading">
         <fa-icon [icon]="faSearch"></fa-icon>
       </div>
 
       <div class="filter-controls">
-        <select [(ngModel)]="selectedFilter" (ngModelChange)="filterReviews()">
-          <option value="all">Todos los estados</option>
-          <option value="pending">Pendientes</option>
-          <option value="approved">Aprobadas</option>
-          <option value="rejected">Rechazadas</option>
-        </select>
-
-        <select [(ngModel)]="selectedRating" (ngModelChange)="filterReviews()">
+        <select [(ngModel)]="selectedRating" (ngModelChange)="filterReviews()" [disabled]="isLoading">
           <option value="0">Todas las calificaciones</option>
           <option value="5">5 estrellas</option>
           <option value="4">4 estrellas</option>
@@ -33,22 +27,29 @@
       </div>
     </div>
 
-    <div class="reviews-list">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
+      <p>Cargando reseñas...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="error-message">
+      <p>{{ error }}</p>
+      <button (click)="loadReviews()" class="btn btn-primary">Reintentar</button>
+    </div>
+
+    <!-- Reviews List -->
+    <div class="reviews-list" *ngIf="!isLoading && !error">
       <div *ngIf="filteredReviews.length === 0" class="no-reviews">
         No hay reseñas para mostrar
       </div>
 
-      <div *ngFor="let review of filteredReviews" 
-           class="review-item"
-           [class.status-pending]="review.status === 'pending'"
-           [class.status-approved]="review.status === 'approved'"
-           [class.status-rejected]="review.status === 'rejected'">
-        
+      <div *ngFor="let review of filteredReviews" class="review-item">
         <div class="review-content">
           <div class="review-header">
             <div class="review-info">
-              <h3>{{ review.guestName }}</h3>
-              <span class="room-number">Habitación {{ review.roomNumber }}</span>
+              <span class="review-date">{{ formatDate(review.createdAt) }}</span>
             </div>
             <div class="review-meta">
               <div class="rating">
@@ -56,39 +57,27 @@
                         [icon]="faStar" 
                         class="star"></fa-icon>
               </div>
-              <span class="review-date">
-                {{ review.date | date:'short' }}
-              </span>
             </div>
           </div>
           
           <p class="review-comment">{{ review.comment }}</p>
           
-          <div *ngIf="review.response" class="review-response">
-            <strong>Respuesta:</strong>
-            <p>{{ review.response }}</p>
+          <div *ngIf="review.hotelResponse" class="review-response">
+            <strong>Respuesta del hotel ({{ formatDate(review.responseDate!) }}):</strong>
+            <p>{{ review.hotelResponse }}</p>
           </div>
-          
-          <div class="review-actions">
-            <button *ngIf="review.status === 'pending'" 
-                    class="btn btn-success" 
-                    (click)="approveReview(review)">
-              <fa-icon [icon]="faStar"></fa-icon>
-              Aprobar
-            </button>
-            
-            <button *ngIf="review.status === 'pending'" 
-                    class="btn btn-danger" 
-                    (click)="rejectReview(review)">
-              <fa-icon [icon]="faTrash"></fa-icon>
-              Rechazar
-            </button>
-            
-            <button *ngIf="review.status !== 'pending'" 
-                    class="btn btn-icon" 
-                    (click)="deleteReview(review)"
-                    title="Eliminar reseña">
-              <fa-icon [icon]="faTrash"></fa-icon>
+
+          <div *ngIf="!review.hotelResponse" class="review-response-form">
+            <textarea #responseInput 
+                     class="form-control" 
+                     rows="3" 
+                     placeholder="Escribe una respuesta a esta reseña..."
+                     [disabled]="isSubmitting"></textarea>
+            <button class="btn btn-primary mt-2" 
+                    (click)="respondToReview(review, responseInput.value)"
+                    [disabled]="isSubmitting">
+              <fa-icon *ngIf="isSubmitting" [icon]="faSpinner" class="fa-spin"></fa-icon>
+              {{ isSubmitting ? 'Enviando...' : 'Responder' }}
             </button>
           </div>
         </div>

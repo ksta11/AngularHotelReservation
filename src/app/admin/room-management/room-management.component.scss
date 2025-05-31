@@ -1,3 +1,6 @@
+// Importar los estilos compartidos
+@use 'image-upload';
+
 .room-management-container {
   min-height: 100vh;
   background-color: #5f8cec;
@@ -238,4 +241,17 @@
   margin-top: 0.25rem;
   font-size: 0.875em;
   color: #dc3545;
+}
+
+// Estilos para habitaciones sin imagen
+.no-image {
+  display: inline-block;
+  width: 60px;
+  height: 40px;
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  color: #999;
+  font-size: 0.75rem;
+  line-height: 40px;
+  text-align: center;
 }

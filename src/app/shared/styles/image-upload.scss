@@ -1,0 +1,70 @@
+.image-upload-container {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.image-upload-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.btn-outline {
+  padding: 8px 16px;
+  background-color: transparent;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+}
+
+.btn-outline:hover {
+  background-color: #f8f8f8;
+  border-color: #999;
+}
+
+.upload-hint {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.image-preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 4px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.btn-remove-image {
+  background-color: rgba(255, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-remove-image:hover {
+  background-color: rgba(255, 0, 0, 0.9);
+}
+
+/* Estilos para mostrar imágenes en la tabla de habitaciones */
+.room-image-thumbnail {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 3px;
+}

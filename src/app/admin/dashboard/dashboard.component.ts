@@ -1,27 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBed, faSignInAlt, faDollarSign, faChartLine, faBell } from '@fortawesome/free-solid-svg-icons';
 import { NotificationSimulatorService } from '../../services/notification-simulator.service';
-
-interface DashboardStats {
-  totalRooms: number;
-  occupiedRooms: number;
-  availableRooms: number;
-  maintenanceRooms: number;
-  todayCheckIns: number;
-  todayCheckOuts: number;
-  monthlyRevenue: number;
-  occupancyRate: number;
-}
+import { DashboardService } from '../../services/dashboard.service';
+import { DashboardStats } from '../../models/dashboard.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, RouterModule, FontAwesomeModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  providers: [DashboardService] // Aseguramos que DashboardService esté disponible
 })
 export class DashboardComponent implements OnInit {
   // Iconos de FontAwesome
@@ -34,51 +27,70 @@ export class DashboardComponent implements OnInit {
   // Estado de la simulación de notificaciones
   notificationsActive = false;
 
-  today = new Date();
-  
+  today = new Date();  
   stats: DashboardStats = {
-    totalRooms: 50,
-    occupiedRooms: 35,
-    availableRooms: 12,
-    maintenanceRooms: 3,
-    todayCheckIns: 8,
-    todayCheckOuts: 5,
-    monthlyRevenue: 25000,
-    occupancyRate: 70
+    totalRooms: 0,
+    occupiedRooms: 0,
+    availableRooms: 0,
+    maintenanceRooms: 0,
+    todayCheckIns: 0,
+    todayCheckOuts: 0,
+    monthlyRevenue: 0,
+    occupancyRate: 0
   };
-
-  recentReservations = [
-    {
-      id: 1,
-      guestName: 'Juan Pérez',
-      roomNumber: '101',
-      checkIn: '2024-03-20',
-      checkOut: '2024-03-25',
-      status: 'Confirmada'
-    },
-    {
-      id: 2,
-      guestName: 'María García',
-      roomNumber: '203',
-      checkIn: '2024-03-21',
-      checkOut: '2024-03-23',
-      status: 'Pendiente'
-    },
-    {
-      id: 3,
-      guestName: 'Carlos López',
-      roomNumber: '305',
-      checkIn: '2024-03-22',
-      checkOut: '2024-03-24',
-      status: 'Confirmada'
-    }
-  ];
-  constructor(private notificationSimulator: NotificationSimulatorService) { }
-
+  
+  private subscription: Subscription = new Subscription();
+  
+  constructor(
+    private notificationSimulator: NotificationSimulatorService,
+    private dashboardService: DashboardService
+  ) { }
   ngOnInit(): void {
-    // Aquí cargaríamos los datos reales desde el servicio
     // Comprobar si la simulación de notificaciones ya está activa
     this.notificationsActive = this.notificationSimulator.isSimulationActive();
+    
+    // Cargar datos del dashboard
+    this.loadDashboardData();
+    
+    // Programar actualización de datos cada 5 minutos
+    const refreshInterval = setInterval(() => this.loadDashboardData(), 300000);
+    
+    // Guardar referencia al intervalo para limpiarlo al destruir el componente
+    this.subscription.add(() => clearInterval(refreshInterval));
+  }
+  
+  ngOnDestroy(): void {
+    // Cancelar todas las suscripciones para evitar memory leaks
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+  
+  /**
+   * Carga los datos para el dashboard desde el backend
+   */  loadDashboardData(): void {
+    console.log('Iniciando carga de datos del dashboard');
+    if (!this.dashboardService) {
+      console.error('dashboardService es undefined!');
+      return;
+    }
+    
+    try {
+      this.subscription.add(
+        this.dashboardService.getDashboardStats().subscribe({
+          next: (data) => {
+            console.log('Datos del dashboard recibidos:', data);
+            this.stats = data;
+          },
+          error: (error) => {
+            console.error('Error al cargar datos del dashboard:', error);
+            // Podríamos mostrar un mensaje de error al usuario aquí
+          }
+        })
+      );
+    } catch (err) {
+      console.error('Excepción al intentar cargar datos del dashboard:', err);
+    }
   }
 
   toggleNotificationSimulation(): void {

@@ -10,37 +10,66 @@
           [(ngModel)]="searchTerm" 
           (input)="onSearch()"
           placeholder="Buscar por número o tipo de habitación..."
+          [disabled]="isLoading"
         >
       </div>
 
       <div class="filter-controls">
-        <select [(ngModel)]="selectedType" (change)="onTypeChange()">
+        <select [(ngModel)]="selectedType" (change)="onTypeChange()" [disabled]="isLoading">
           <option value="todos">Todos los tipos</option>
-          <option value="suite">Suite</option>
-          <option value="deluxe">Deluxe</option>
-          <option value="estandar">Estándar</option>
+          <option [value]="RoomType.SINGLE">Individual</option>
+          <option [value]="RoomType.DOUBLE">Doble</option>
+          <option [value]="RoomType.TRIPLE">Triple</option>
+          <option [value]="RoomType.QUAD">Cuádruple</option>
+          <option [value]="RoomType.SUITE">Suite</option>
+          <option [value]="RoomType.DELUXE">Deluxe</option>
         </select>
 
-        <select [(ngModel)]="selectedPrice" (change)="onPriceChange()">
+        <select [(ngModel)]="selectedPrice" (change)="onPriceChange()" [disabled]="isLoading">
           <option value="todos">Todos los precios</option>
-          <option value="economico">Económico</option>
-          <option value="medio">Medio</option>
-          <option value="premium">Premium</option>
+          <option value="economico">Económico (hasta $100)</option>
+          <option value="medio">Medio ($100 - $200)</option>
+          <option value="premium">Premium (más de $200)</option>
         </select>
       </div>
     </div>
   </div>
 
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando habitaciones disponibles...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+    <button (click)="loadRooms()" class="retry-btn">
+      Intentar de nuevo
+    </button>
+  </div>
+
   <!-- Grid de Habitaciones -->
-  <div class="rooms-grid">
+  <div class="rooms-grid" *ngIf="!isLoading && !error">
+    <div *ngIf="filteredRooms.length === 0" class="no-rooms">
+      <p>No se encontraron habitaciones disponibles con los filtros seleccionados.</p>
+    </div>
+
     <div class="room-card" *ngFor="let room of filteredRooms">
       <div class="room-image">
-        <img [src]="room.images[0]" [alt]="'Habitación ' + room.number">
+        <img [src]="room.imageUrl || 'assets/images/room-placeholder.jpg'" 
+             [alt]="'Habitación ' + room.roomNumber"
+             class="room-photo">
+        <div class="room-type-badge">
+          {{getRoomTypeLabel(room.roomType)}}
+        </div>
       </div>
       
       <div class="room-info">
-        <h3>Habitación {{room.number}}</h3>
-        <p class="room-type">{{room.type}}</p>
+        <div class="room-header">
+          <h3>Habitación {{room.roomNumber}}</h3>
+          <p class="hotel-name">{{room.hotel.name}}</p>
+        </div>
         
         <div class="room-details">
           <span class="capacity">
@@ -49,6 +78,10 @@
           <span class="price">
             ${{room.price}} / noche
           </span>
+        </div>
+
+        <div *ngIf="room.description" class="room-description">
+          {{room.description}}
         </div>
 
         <div class="amenities">
@@ -60,10 +93,10 @@
         <button 
           class="reserve-btn" 
           (click)="onReserve(room.id)"
-          [disabled]="!room.available">
-          {{room.available ? 'Reservar' : 'No disponible'}}
+          [disabled]="room.state.toUpperCase() !== 'AVAILABLE'">
+          {{room.state.toUpperCase() === 'AVAILABLE' ? 'Reservar' : 'No disponible'}}
         </button>
       </div>
     </div>
   </div>
-</div> 
+</div>

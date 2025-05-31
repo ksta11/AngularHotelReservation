@@ -28,8 +28,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     router.navigate(['/auth/login']);
     return next(req);
   }
-  
-  if (token) {
+    if (token) {
     // Verificar si el usuario tiene el rol correcto para rutas de administración
     if (isAdminRoute) {
       const userRole = authService.getUserRoleFromToken();
@@ -39,7 +38,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
     }
     
-    // Clonar la solicitud y agregar el token de autorización
+    // Comprobar si la solicitud va a Cloudinary
+    if (req.url.includes('api.cloudinary.com')) {
+      // No añadir token para las solicitudes a Cloudinary
+      return next(req);
+    }
+    
+    // Clonar la solicitud y agregar el token de autorización para otras solicitudes
     const authReq = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`)
     });
